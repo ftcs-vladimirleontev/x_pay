@@ -2,16 +2,26 @@
 import '../../node_modules/core-js/features/promise';
 
 /* #################### CUSTOM LIBRARIES #################### */
+/* library for state */
 import stateLib from './js_modules/library-state.js';
 import stateLocalLib from './js_modules/library-state-local.js';
 import stateGlobalLib from './js_modules/library-state-global.js';
 import stateDBLib from './js_modules/library-state-db.js';
+/* library for events */
 import customEvents from './js_modules/library-cust-ev.js';
 import callback from './js_modules/library-cust-ev-callbacks.js';
+/* network library */
+import requests from './js_modules/library-requests.js';
+/* methods */
 import initPage from './js_modules/logic_initPage.js';
 import modal from './js_modules/logic_modal.js';
-import interval from './js_modules/interface_GetFunctionInTheInterval.js';
-
+import setCurrencies from './js_modules/set-exchanger-currencies.js';
+import setCountryLists from './js_modules/set-exchanger-country-lists.js';
+import setExTabs from './js_modules/set-exchanger-tabs.js';
+import setExDrops from './js_modules/set-exchanger-dropdowns.js';
+import setExQInp from './js_modules/set-exchanger-quan-inputs.js';
+import setExForm2 from './js_modules/set-exchanger-form2.js';
+import setExButtons from './js_modules/set-exchanger-buttons.js';
 
 /* #################### CONSTANTS AND VARIABLES #################### */
 const TARGETS = {
@@ -46,8 +56,6 @@ const TARGETS = {
 	phone_bo: document.getElementById('phone-buy-o'),
 	exHeader: document.getElementById('exchanger-header'),
 	exTitle: document.getElementById('exchanger-title'),
-	ywg_q: document.getElementById('get-quantity'),
-	ywg_c: document.getElementById('get-currency'),
 	ex_bb: document.getElementById('ex-button-back'),
 	ex_bn: document.getElementById('ex-button-next'),
 	ex_bc: document.getElementById('ex-button-cansel'),
@@ -70,67 +78,65 @@ const TARGETS = {
 const changeModal = modal.bind(TARGETS);
 
 /* #################### LOGIC #################### */
-/* set currencies */
-import getCurrencies from './js_modules/logic_getCurrencies.js';
-if (getCurrencies.call(customEvents)) {
 
-} else {
+requests.processMultipleGETRequests([
+	requests.sendGETRequest(requests.server, '/service/currencies'), 
+	requests.sendGETRequest(requests.server, '/service/countries'),
+], startLogic);
 
-}
-import setCurrencies from './js_modules/set-exchanger-currencies.js';
-setCurrencies.call(TARGETS, customEvents);
-/* set country lists */
-import setCountryLists from './js_modules/set-exchanger-country-lists.js';
-setCountryLists.call(TARGETS);
+function startLogic(values) {
+	let dataForCurrencies = values[0];
+	let dataForCountries = values[1];
 
-/* synchronize state */
-if (!stateLib.itsHere.call(stateGlobalLib)) {
-	stateLib.init.call(stateLib, stateGlobalLib);
-}
-stateLib.init.call(stateLib, stateLocalLib);
-stateLib.synchLocal.call(stateLib, stateGlobalLib, stateLocalLib);
-stateLib.init.call(stateLib, stateDBLib);
+	/* set currencies */
+	setCurrencies.call(TARGETS, dataForCurrencies, customEvents);
 
-/* set element listeners */
-/* tabs */
-import setExTabs from './js_modules/set-exchanger-tabs.js';
-setExTabs.call(TARGETS, customEvents);
-/* dropdowns */
-import setExDrops from './js_modules/set-exchanger-dropdowns.js';
-setExDrops.call(TARGETS, customEvents);
-/* quantity inputs */
-import setExQInp from './js_modules/set-exchanger-quan-inputs.js';
-setExQInp.call(TARGETS, customEvents);
-/* form2 */
-import setExForm2 from './js_modules/set-exchanger-form2.js';
-setExForm2.call(TARGETS);
-/* exchanger buttons */
-import setExButtons from './js_modules/set-exchanger-buttons.js';
-setExButtons.call(TARGETS, customEvents);
+	/* set country lists */
+	setCountryLists.call(TARGETS, dataForCountries);
 
-
-/* set listeners for custom events */
-for (const name of customEvents.events) {
-	document.addEventListener(name, ev => {
-		callback[name].call(customEvents, ev);
-	});
-}
-
-/* init page */
-initPage.call(TARGETS);
-
-/* set synchronization with the global state */
-window.addEventListener('blur', ev => {
-	if(customEvents.checkRate) {
-		customEvents.checkRate.stop();
+	/* synchronize state */
+	if (!stateLib.itsHere.call(stateGlobalLib)) {
+		stateLib.init.call(stateLib, stateGlobalLib);
 	}
-});
-window.addEventListener('focus', ev => {
+	stateLib.init.call(stateLib, stateLocalLib);
 	stateLib.synchLocal.call(stateLib, stateGlobalLib, stateLocalLib);
-	setTimeout(() => {
-		initPage.call(TARGETS);
-	}, 200);
-});
+	stateLib.init.call(stateLib, stateDBLib);
 
-/* open page */
-changeModal(false);
+	/* set element listeners */
+	/* tabs */
+	setExTabs.call(TARGETS, customEvents);
+	/* dropdowns */
+	setExDrops.call(TARGETS, customEvents);
+	/* quantity inputs */
+	setExQInp.call(TARGETS, customEvents);
+	/* form2 */
+	setExForm2.call(TARGETS);
+	/* exchanger buttons */
+	setExButtons.call(TARGETS, customEvents);
+
+	/* set listeners for custom events */
+	for (const name of customEvents.events) {
+		document.addEventListener(name, ev => {
+			callback[name].call(customEvents, ev);
+		});
+	}
+
+	/* init page */
+	initPage.call(TARGETS, customEvents);
+
+	/* set synchronization with the global state */
+	window.addEventListener('blur', ev => {
+		if(customEvents.checkRate) {
+			customEvents.checkRate.stop();
+		}
+	});
+	window.addEventListener('focus', ev => {
+		stateLib.synchLocal.call(stateLib, stateGlobalLib, stateLocalLib);
+		setTimeout(() => {
+			initPage.call(TARGETS, customEvents);
+		}, 100);
+	});
+
+	/* open page */
+	changeModal(false);
+}

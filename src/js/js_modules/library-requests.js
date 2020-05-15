@@ -30,13 +30,26 @@ export default {
 		return fetch(server + route);
 	},
 
-	processingFetch: function (promise, callback) {
+	processingFetch: function (promise, callback, data) {
 		promise
 			.then(response => getResponseObj(response))
-			.then(responseObj => callback(responseObj));
+			.then(responseObj => callback(responseObj, data));
 
 		async function getResponseObj(response) {
 			return {ok: response.ok, status: response.status, body: await response.json()};
 		}	
 	},
+
+	processMultipleGETRequests: function(responsesArray, callback, data) {
+		Promise.all(responsesArray)
+			.then(responses => {
+				let values = [];
+				for (let i = 0; i < responses.length; i++) {
+					values.push(responses[i].json());
+				}
+				return Promise.all(values);
+			})
+			.then(values => callback(values, data));
+	},
+
 };

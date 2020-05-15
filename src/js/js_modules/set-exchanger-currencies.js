@@ -1,21 +1,28 @@
 import createSelect from './logic_createSelect.js';
 
-export default function(customEvents) {
+export default function(data, customEvents) {
 	let targets = [this.crypto, this.fiat];
 	let currency = customEvents.variables.currencies;
-	let request = requests.sendGETRequest(requests.server, '/service/currencies');
-	requests.processingFetch(request, responseObj => {
-		sessionStorage.setItem('countries', JSON.stringify(responseObj.body));
-		if (responseObj.ok) {
-			for (let i = 0; i < targets.length; i++) {
-				createSelect(targets[i], responseObj.body);
-			}
+
+	for (let key in data) {
+		let currencyArray = data[key];
+		currency[key] = {};
+
+		for (let i = 0; i < currencyArray.length; i++) {
+			currency[key][currencyArray[i].id] = {
+				name: currencyArray[i].name,
+				displayCode: currencyArray[i].displayCode,
+				displayDecimals: currencyArray[i].displayDecimals,
+			};
 		}
-	})
+	}
 
-
+	let dataForCreateSelect = [currency.crypto, currency.fiat];
+	for (let i = 0; i < targets.length; i++) {
+		createSelect('currency', targets[i], dataForCreateSelect[i]);
+	}
 }
-//customEvents.variables.currencies
+
 /*
 {
 	"crypto": [
@@ -30,6 +37,4 @@ export default function(customEvents) {
 		{"id":12,"name":"Euro","displayCode":"EUR","displayDecimals":2}
 	]
 }
-
-
 */

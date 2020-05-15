@@ -42,9 +42,7 @@ export default function(customEvents) {
 					changeModal(true, 'accept_si');
 					return;
 				}
-				let dataForEv = {
-					targets: this, variables: customEvents.variables, type: tab
-				};
+				let dataForEv = {targets: this, variables: customEvents.variables, type: tab};
 				let cusEv = customEvents.CreateCustomEvent('to-server-validation', dataForEv);
 				customEvents.startCustomEvent(cusEv);
 			} else {

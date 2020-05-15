@@ -32,7 +32,19 @@ export default {
 	eventDebag: function(eventName) {
 		// console.log(eventName);
 	},
-	
+
+	responseErrors: {
+		iban: 'Error! Check and enter the correct account number',
+		email: 'Error! Check and enter the correct email',
+		both: 'Error! Check and enter the correct email and account number',
+	},
+
+	buttonText: {
+		next: "NEXT",
+		send: "SEND APPLICATION",
+		paid: "I PAID"
+	},
+
 	form1_text: {
 		tmd: {
 			sell: {
@@ -55,11 +67,12 @@ export default {
 		countingData: {
 			counting: false,
 			customEvents: null,
-			targets: null,
-			mode: null,
-			input: null,
-			output: null,
-			quantity: null,
+			event: null,
+			// targets: null,
+			// mode: null,
+			// input: null,
+			// output: null,
+			// quantity: null,
 		},
 		timerData: {
 			begin: null,
@@ -70,22 +83,7 @@ export default {
 			type: null,
 			modal: null,
 		},
-		currencies: {
-			crypto: {},
-			fiat: {}
-		}
-	},
-
-	buttonText: {
-		next: "NEXT",
-		continue: "SEND APPLICATION",
-		paid: "I PAID"
-	},
-
-	responseErrors: {
-		iban: 'Error! Check and enter the correct account number',
-		email: 'Error! Check and enter the correct email',
-		both: 'Error! Check and enter the correct email and account number',
+		currencies: {},
 	},
 
 	CreateCustomEvent: function (name, data) {
@@ -116,35 +114,53 @@ export default {
 	getIntervalFunction: interval,
 
 	callbackToCheckRate: function (data) {
-		let ROUTE = (data.mode == 'sell') ? '/server/pair/' : '/crypto/buy/calculate';
-		// let ROUTE = (data.mode == 'sell') ? '/crypto/sell/calculate' : '/crypto/buy/calculate';
+		let ev = data.event;
+		let state = ev.detail.stateLib;
+		let local = ev.detail.stateLocalLib;
+		let requests = ev.detail.requests;
 
-		let amount = data.quantity.replace(',', '.');
-		let requestRoute = (data.mode == 'buy') ? 
-												getBuyURL(ROUTE, data.input, data.output, amount) : 
-												getSellURL(ROUTE, data.input, data.output, amount);
+		let mode = state.getStateValue.call(local, 'xpay_tab');
+		let type = state.getStateValue.call(local, 'xpay_conting_type');
+		let input, output, quantity, amount;
+
+		let ROUTE = (mode == 'sell') ? '/server/pair/' : '/crypto/buy/calculate';
+		// let ROUTE = (mode == 'sell') ? '/crypto/sell/calculate' : '/crypto/buy/calculate';
+		if (type == 'crypto') {
+			// input = ev.detail.targets.crypto.value;
+			// output = ev.detail.targets.fiat.value;
+			input = toCurrencyCode('crypto', ev.detail.targets.crypto.value);
+			output = toCurrencyCode('fiat', ev.detail.targets.fiat.value);
+			quantity = ev.detail.targets.cryptoQ.value;
+		} else {
+			// input = ev.detail.targets.fiat.value;
+			// output = ev.detail.targets.crypto.value;
+			input = toCurrencyCode('fiat', ev.detail.targets.fiat.value);
+			output = toCurrencyCode('crypto', ev.detail.targets.crypto.value);
+			quantity = ev.detail.targets.fiatQ.value;
+		}
+		amount = quantity.replace(',', '.');
+
+		let requestRoute = (mode == 'buy') ? 
+			getBuyURL(ROUTE, input, output, amount) : getSellURL(ROUTE, input, output, amount);
 		// let requestRoute = getURL(ROUTE, data.input, data.output, amount);
 		let request = requests.sendGETRequest(requests.server, requestRoute);
 		requests.processingFetch(request, responseObj => {
-			let value = (data.mode == 'buy') ? responseObj.body.amount : responseObj.body;
-			// target.value = (data.mode == 'buy') ? responseObj.body.amount : responseObj.body;
-			// data.ywg_target.innerHTML = data.ywg_sourse.value;
-			let rate = (data.mode == 'buy') ? responseObj.body.exchangeRate : null;
-			let dataForEv, cusEv, key;
-			if (data.counting) {
-				dataForEv = {
-					targets: data.targets, variables: data.variables, value: value, rate: rate,
-				};
-				key = 'counted';
-			} else {
-				dataForEv = {
-					targets: data.targets, variables: data.variables, value: '', rate: null,
-				};
-				key = 'end-counting';
-			}
-			cusEv = data.customEvents.CreateCustomEvent(key, dataForEv);
+			let value = (mode == 'buy') ? responseObj.body.amount : responseObj.body;
+			let rate = (mode == 'buy') ? responseObj.body.exchangeRate : null;
+
+			let dataForEv = {targets: ev.detail.targets, variables: ev.detail.variables};
+			dataForEv.value = (data.counting) ? value : '';
+			dataForEv.rate = (data.counting) ? rate : null;
+			let key = (data.counting) ? 'counted' : 'end-counting';
+			let cusEv = data.customEvents.CreateCustomEvent(key, dataForEv);
 			data.customEvents.startCustomEvent(cusEv);
 		});
+
+		function toCurrencyCode(type, id) {
+			let curObj = (type == 'crypto') ? 
+				ev.detail.variables.currencies.crypto : ev.detail.variables.currencies.fiat;
+			return curObj[id].displayCode;
+		}
 
 	
 		function getBuyURL(ROUTE, input, output, quantity) {
@@ -156,7 +172,6 @@ export default {
 		}
 
 		function getSellURL(ROUTE, input, output, quantity) {
-			// let url = `https://srv.bitfiat.online/server/pair/${own}/${want}/${amount}`;
 			return (ROUTE + input + '/' + output + '/' + quantity);
 		}
 

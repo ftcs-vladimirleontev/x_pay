@@ -24,17 +24,17 @@ export default {
 			ev.detail.variables.countingData.counting = false;
 		}
 
-		ev.detail.targets.crypto.value = 'BTC';
+		ev.detail.targets.crypto.value = ev.detail.targets.crypto.dataset.default;
 		ev.detail.stateLib.setStateValue.call(
-			ev.detail.stateLocalLib, 'xpay_crypto', 'BTC', time
+			ev.detail.stateLocalLib, 'xpay_crypto', ev.detail.targets.crypto.dataset.default, time
 		);
 		ev.detail.targets.cryptoQ.value = '';
 		ev.detail.stateLib.setStateValue.call(
 			ev.detail.stateLocalLib, 'xpay_crypto_quan', '', time
 		);
-		ev.detail.targets.fiat.value = 'USD';
+		ev.detail.targets.fiat.value = ev.detail.targets.fiat.dataset.default;
 		ev.detail.stateLib.setStateValue.call(
-			ev.detail.stateLocalLib, 'xpay_fiat', 'USD', time
+			ev.detail.stateLocalLib, 'xpay_fiat', ev.detail.targets.fiat.dataset.default, time
 		);
 		ev.detail.targets.fiatQ.value = '';
 		ev.detail.stateLib.setStateValue.call(
@@ -44,10 +44,7 @@ export default {
 			ev.detail.stateLib, ev.detail.stateGlobalLib, ev.detail.stateLocalLib
 		);
 
-		let dataForEv = {
-			targets: ev.detail.targets,
-			variables: ev.detail.variables,
-		};
+		let dataForEv = {	targets: ev.detail.targets,variables: ev.detail.variables,};
 		let cusEv = this.CreateCustomEvent('inputs-is-cleaned', dataForEv);
 		this.startCustomEvent(cusEv);
 	},
@@ -60,11 +57,18 @@ export default {
 		ev.detail.stateLib.synch.call(
 			ev.detail.stateLib, ev.detail.stateGlobalLib, ev.detail.stateLocalLib
 		);
-		ev.detail.targets.ywg_c.innerHTML = ev.detail.targets.fiat.value;
 
-		if (ev.detail.type = 'sell') {
+		let currencyObj = this.variables.currencies[ev.detail.type];
+		let value = (ev.detail.type == 'crypto') ? 
+			+ev.detail.targets.crypto.value : +ev.detail.targets.fiat.value;
+		let currencyCode = currencyObj[value].displayCode;
+
+		if (ev.detail.type == 'fiat') {
+			ev.detail.targets.ywg_c.innerHTML = currencyCode;
+		}
+		if (ev.detail.type == 'sell') {
 			for (let i = 0; i < ev.detail.targets.paste_first_f2.length; i++) {
-				ev.detail.targets.paste_first_f2[i].innerHTML = ev.detail.targets.crypto.value;
+				ev.detail.targets.paste_first_f2[i].innerHTML = currencyCode;
 			}
 		}
 		let countingType = ev.detail.stateLib.getStateValue.call(
@@ -121,7 +125,6 @@ export default {
 
 			if (target.value != '') {
 				if (!variables.countingData.counting) {
-					variables.countingData.counting = true;
 					let cusEv = this.CreateCustomEvent('start-counting', dataForEv);
 					this.startCustomEvent(cusEv);
 				} else {
@@ -147,8 +150,8 @@ export default {
 				this.variables.countingData
 			);
 		}
-		ev.detail.variables.countingData.variables = ev.detail.variables;
-		ev.detail.variables.countingData.targets = ev.detail.targets;
+		// ev.detail.variables.countingData.variables = ev.detail.variables;
+		// ev.detail.variables.countingData.targets = ev.detail.targets;
 		ev.detail.variables.countingData.customEvents = this;
 
 		let dataForEv = {
@@ -156,34 +159,23 @@ export default {
 		};
 		let cusEv = this.CreateCustomEvent('change-counting', dataForEv);
 		this.startCustomEvent(cusEv);
-		this.checkRate.start();
+		// this.checkRate.start();
 	},
 
 	'change-counting': function (ev) {
 		this.eventDebag('change-counting');
 
 		let time = ev.detail.time || ev.detail.stateLib.getTime();
+		ev.detail.variables.countingData.event = ev;
+
 		ev.detail.stateLib.setStateValue.call(
 			ev.detail.stateLocalLib, 'xpay_conting_type', ev.detail.type, time
 		);
 
-		let toChange = ev.detail.variables.countingData;
-		toChange.mode = ev.detail.stateLib.getStateValue.call(
-			ev.detail.stateLocalLib, 'xpay_tab'
-		);
-		if (ev.detail.type == 'crypto') {
-			toChange.input = ev.detail.targets.crypto.value;
-			toChange.output = ev.detail.targets.fiat.value;
-			toChange.quantity = ev.detail.targets.cryptoQ.value;
-		} else {
-			toChange.input = ev.detail.targets.fiat.value;
-			toChange.output = ev.detail.targets.crypto.value;
-			toChange.quantity = ev.detail.targets.fiatQ.value;
-		}
-
 		ev.detail.stateLib.synch.call(
 			ev.detail.stateLib, ev.detail.stateGlobalLib, ev.detail.stateLocalLib
 		);
+		ev.detail.variables.countingData.counting = true;
 		if (this.checkRate) {
 			if (!this.checkRate.isStarted()) {
 				this.checkRate.start();
@@ -378,7 +370,7 @@ export default {
 			ev.detail.stateLocalLib, 'xpay_begin', false, time
 		);
 		ev.detail.setData.setTransFromState.call(
-			ev.detail.setData, ev.detail.type, ev.detail.targets, this.customEvents
+			ev.detail.setData, ev.detail.type, ev.detail.targets, this
 		);
 
 		/* text next-button */
@@ -452,8 +444,10 @@ export default {
 							closureThis.checkRate.start();
 						}
 					} else {
+						let cryptoValue = state.getStateValue.call(local, 'xpay_crypto');
+						let cryptoCode = closureThis.variables.currencies.crypto[cryptoValue].displayCode;
 						changeModal(
-							true, 'destroyed', state.getStateValue.call(local, 'xpay_crypto')
+							true, 'destroyed', cryptoCode
 						);
 						startEvent('clean-transaction');
 					}

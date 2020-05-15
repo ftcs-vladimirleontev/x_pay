@@ -1,6 +1,7 @@
 function createSelect(type, target, data) {
 	let flag = true;
 	let output = '';
+	
 	for (let key in data) {
 		if (flag) {
 			target.dataset.default = key;
@@ -8,11 +9,11 @@ function createSelect(type, target, data) {
 		}
 		let temtlate;
 		switch(type) {
-			case '':
+			case 'country':
 				temtlate = `<option class="ex-step-2__option" value="${key}">${data[key]}</option>\n`;
 				break;
-			case '':
-				temtlate = `<option value="BTC">Bitcoin (BTC)</option>\n`;
+			case 'currency':
+				temtlate = `<option value="${key}">${data[key].name} (${data[key].displayCode})</option>\n`;
 				break;
 		}
 		output += temtlate;
