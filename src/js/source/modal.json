@@ -1,0 +1,19 @@
+{
+	"button_close": "close",
+	"button_cancel": "calcel",
+	"button_d": "delete application",
+
+	"text": {
+		"confirm": "If you delete an application, all information will be lost",
+		"deleted": "Your application has beed deleted",
+		"buy_end": "Your application has beed sending. Our manager will contact you as soon as possible, thank you!",
+		"sell_end": "We have received your payment. \"Funds\" will come to your indicated account soon. Payment confirmation you will also receive in your mail",
+		"wait": "Please wait, we are checking your payment",
+		"not_paid": "We have not received your payment. or connect with support",
+		"loading": "Please wait...",
+		"no_data_of_numbers": "Please enter some information for currency exchange",
+		"server_not_available": "Sorry, but the server is unavailable. Please try again later",
+		"accept_si": "Sorry, but you must accept the service's rules",
+		"time_is_up": "Your time is up. The transaction was canceled automatically"
+	}
+}
