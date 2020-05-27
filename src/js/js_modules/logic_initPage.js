@@ -8,26 +8,21 @@ export default function(customEvents) {
 	let tab = stateLib.getStateValue.call(stateLocalLib, 'xpay_tab');
 	let slide = stateLib.getStateValue.call(stateLocalLib, 'xpay_slide');
 	let countingType = stateLib.getStateValue.call(stateLocalLib, 'xpay_conting_type');
-	let crypto = stateLib.getStateValue.call(stateLocalLib, 'xpay_crypto');
-	let fiat = stateLib.getStateValue.call(stateLocalLib, 'xpay_fiat');
 	let fiatQ = stateLib.getStateValue.call(stateLocalLib, 'xpay_fiat_quan');
 
+	/* dropdowns choice */
+	setData.setDropdownFromState.call(setData, 'crypto', this);
+	if (!stateLib.getStateValue.call(stateLocalLib, 'xpay_crypto')) {
+		setData.setDropdownInState.call(setData, 'crypto', this);
+	}
+	setData.setDropdownFromState.call(setData, 'fiat', this);
+	if (!stateLib.getStateValue.call(stateLocalLib, 'xpay_fiat')) {
+		setData.setDropdownInState.call(setData, 'fiat', this);
+	}
+
+	/* set next-button text */
 	this.ex_bn.innerText = (slide == '1' || slide == '2') ? customEvents.buttonText.next : 
 		(tab == 'sell') ? customEvents.buttonText.paid : customEvents.buttonText.send;
-
-	/* dropdowns choice */
-	if (!crypto) {
-		setData.setDropdownInState.call(setData, 'crypto', this);
-		crypto = this.crypto.value;
-	} else {
-		setData.setDropdownFromState.call(setData, 'crypto', this);
-	}
-	if (!fiat) {
-		setData.setDropdownInState.call(setData, 'fiat', this);
-		fiat = this.fiat.value;
-	} else {
-		setData.setDropdownFromState.call(setData, 'fiat', this);
-	}
 
 	/* You will get / give */
 	if (tab == 'sell') {
@@ -39,7 +34,9 @@ export default function(customEvents) {
 		this.tmds.innerHTML = customEvents.form1_text.tmd.buy.second;
 		this.tmd_ywg.innerHTML = customEvents.form1_text.tmd.buy.ywg;;
 	}
-	this.ywg_c.innerHTML = customEvents.variables.currencies.fiat[fiat].displayCode;
+
+	let fiatID = stateLib.getStateValue.call(stateLocalLib, 'xpay_fiat');
+	this.ywg_c.innerHTML = customEvents.variables.currencies.fiat[fiatID].displayCode;
 	this.ywg_q.innerHTML = (fiatQ) ? fiatQ : '0';
 	
 
@@ -51,11 +48,10 @@ export default function(customEvents) {
 			targets: this,
 			variables: customEvents.variables
 		};
-		let cusEv = customEvents.CreateCustomEvent(
-			'currency-input-is-changed', dataForEv
-		);
 		if (!document.hidden) {
-			customEvents.startCustomEvent(cusEv);
+			customEvents.startEvent.call(
+				customEvents, 'currency-input-is-changed', dataForEv
+			);
 		}
 	}
 

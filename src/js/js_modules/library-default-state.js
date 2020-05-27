@@ -11,6 +11,7 @@ export default [
 	{key: 'data_is_sended', value: null},
 	{key: 'xpay_conting_type', value: null},
 	{key: 'xpay_conting_rate', value: null},
+	{key: 'xpay_wallet', value: null},
 	// {key: 'xpay_sell_b', value: false}, 
 	// {key: 'xpay_sell_ic', value: null}, 
 	// {key: 'xpay_sell_iq', value: null}, 

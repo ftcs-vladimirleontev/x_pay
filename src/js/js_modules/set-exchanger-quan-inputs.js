@@ -18,7 +18,7 @@ export default function(customEvents) {
 	};
 	for (let i = 0; i < INPUTS.length; i++) {
 		INPUTS[i].addEventListener('focus', ev => {
-			startEvent('change-counting', ev, this);
+			startEvent('currency-input-is-changed', ev, this);
 		});
 
 		INPUTS[i].addEventListener('keydown', ev => {
@@ -73,12 +73,11 @@ export default function(customEvents) {
 	}
 
 	function startEvent(key, ev, targets) {
-		let dataForEvent = {
+		let dataForEv = {
 			type: ev.target.dataset.type,
 			targets: targets,
 			variables: customEvents.variables
 		};
-		let cusEv = customEvents.CreateCustomEvent(key, dataForEvent);
-		customEvents.startCustomEvent(cusEv);
+		customEvents.startEvent.call(customEvents, key, dataForEv);
 	}
 }

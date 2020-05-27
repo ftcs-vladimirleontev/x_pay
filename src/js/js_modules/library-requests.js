@@ -36,7 +36,7 @@ export default {
 			.then(responseObj => callback(responseObj, data));
 
 		async function getResponseObj(response) {
-			return {ok: response.ok, status: response.status, body: await response.json()};
+			return {ok: response.ok, status: +response.status, body: await response.json()};
 		}	
 	},
 
@@ -50,6 +50,15 @@ export default {
 				return Promise.all(values);
 			})
 			.then(values => callback(values, data));
+	},
+
+	bodyIsOK: function (responseObj) {
+		return (!responseObj.body.hasOwnProperty('status')) ? true :
+			(responseObj.body.status == '200') ? true : false;
+	},
+
+	responseIsNotOK: function (responseObj) {
+		return (responseObj.ok) ? 0 : '' + responseObj.status;
 	},
 
 };

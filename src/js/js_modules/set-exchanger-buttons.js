@@ -33,7 +33,11 @@ export default function(customEvents) {
 				stateLib.setStateValue.call(stateGlobalLib, 'xpay_slide', 2, time);
 				setSlide(2, this);
 			} else {
-				changeModal(true, 'no-data-of-numbers');
+				if (parseFloat(this.cryptoQ.value) === 0 || parseFloat(this.fiatQ.value) === 0) {
+					changeModal(true, 'null-data');
+				} else {
+					changeModal(true, 'no-data-of-numbers');
+				}
 			}
 		} else if (+slide == 2) {
 			let errors = getErrors.call(this, tab);
@@ -43,15 +47,13 @@ export default function(customEvents) {
 					return;
 				}
 				let dataForEv = {targets: this, variables: customEvents.variables, type: tab};
-				let cusEv = customEvents.CreateCustomEvent('to-server-validation', dataForEv);
-				customEvents.startCustomEvent(cusEv);
+				customEvents.startEvent.call(customEvents, 'to-server-validation', dataForEv);
 			} else {
 				setErrors.call(this, tab, errors);
 			}
 		} else {
 				let dataForEv = {targets: this, variables: customEvents.variables, type: tab};
-				let cusEv = customEvents.CreateCustomEvent('finish-transaction', dataForEv);
-				customEvents.startCustomEvent(cusEv);
+				customEvents.startEvent.call(customEvents, 'finish-transaction', dataForEv);
 		}
 	});
 
@@ -62,8 +64,7 @@ export default function(customEvents) {
 		let dataForEv = {targets: this, variables: customEvents.variables};
 		dataForEv.type = stateLib.getStateValue.call(stateLocalLib, 'xpay_tab');
 		let key = (dataForEv.type == 'sell') ? 'end-timer' : 'clean-transaction';
-		let cusEv = customEvents.CreateCustomEvent(key, dataForEv);
-		customEvents.startCustomEvent(cusEv);
+		customEvents.startEvent.call(customEvents, key, dataForEv);
 		changeModal(true, 'deleted');
 	});
 

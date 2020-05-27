@@ -18,13 +18,13 @@ export default function(TARGETS) {
 	}
 
 	// !!! костыль на старый калькулятор sell crypto
-	if (mode == 'sell') {
-		TARGETS.fiatQ.readOnly = true;
-		TARGETS.fiatQ.classList.add('not-changet');
-	} else {
-		TARGETS.fiatQ.readOnly = false;
-		TARGETS.fiatQ.classList.remove('not-changet');
-	}
+	// if (mode == 'sell') {
+	// 	TARGETS.fiatQ.readOnly = true;
+	// 	TARGETS.fiatQ.classList.add('not-changet');
+	// } else {
+	// 	TARGETS.fiatQ.readOnly = false;
+	// 	TARGETS.fiatQ.classList.remove('not-changet');
+	// }
 	/************************************************/
 
 	let disableAll = [

@@ -1,5 +1,3 @@
-// import getETHWallet from './logic_getETHWallet.js';
-import processingNot200 from './logic_processingNot200.js';
 // this = customEvents
 export default {
 	'tab-is-clicked': function (ev) {
@@ -7,7 +5,7 @@ export default {
 		let time = ev.detail.time || ev.detail.stateLib.getTime();
 	
 		ev.detail.stateLib.setStateValue.call(
-			ev.detail.stateLocalLib, 'xpay_tab', ev.detail.mode, time
+			ev.detail.stateLocalLib, 'oero_tab', ev.detail.mode, time
 		);
 		ev.detail.setPage(ev.detail.targets);
 
@@ -28,22 +26,30 @@ export default {
 
 		ev.detail.targets.crypto.value = ev.detail.targets.crypto.dataset.default;
 		ev.detail.stateLib.setStateValue.call(
-			ev.detail.stateLocalLib, 'xpay_crypto', ev.detail.targets.crypto.dataset.default, time
+			ev.detail.stateLocalLib, 'oero_crypto', ev.detail.targets.crypto.dataset.default, time
 		);
 		ev.detail.targets.cryptoQ.value = '';
-		ev.detail.stateLib.deleteStateValue.call(ev.detail.stateLocalLib, 'xpay_crypto_quan', time);
+		ev.detail.stateLib.setStateValue.call(
+			ev.detail.stateLocalLib, 'oero_crypto_quan', '', time
+		);
 		ev.detail.targets.fiat.value = ev.detail.targets.fiat.dataset.default;
 		ev.detail.stateLib.setStateValue.call(
-			ev.detail.stateLocalLib, 'xpay_fiat', ev.detail.targets.fiat.dataset.default, time
+			ev.detail.stateLocalLib, 'oero_fiat', ev.detail.targets.fiat.dataset.default, time
 		);
 		ev.detail.targets.fiatQ.value = '';
-		ev.detail.stateLib.deleteStateValue.call(ev.detail.stateLocalLib, 'xpay_fiat_quan', time);
+		ev.detail.stateLib.setStateValue.call(
+			ev.detail.stateLocalLib, 'oero_fiat_quan', '', time
+		);
 		ev.detail.stateLib.synch.call(
 			ev.detail.stateLib, ev.detail.stateGlobalLib, ev.detail.stateLocalLib
 		);
 
-		let dataForEv = {	targets: ev.detail.targets,variables: ev.detail.variables,};
-		this.startEvent.call(this, 'inputs-is-cleaned', dataForEv);
+		let dataForEv = {
+			targets: ev.detail.targets,
+			variables: ev.detail.variables,
+		};
+		let cusEv = this.CreateCustomEvent('inputs-is-cleaned', dataForEv);
+		this.startCustomEvent(cusEv);
 	},
 
 	'currency-select-is-changed': function (ev) {
@@ -54,24 +60,15 @@ export default {
 		ev.detail.stateLib.synch.call(
 			ev.detail.stateLib, ev.detail.stateGlobalLib, ev.detail.stateLocalLib
 		);
+		ev.detail.targets.ywg_c.innerHTML = ev.detail.targets.fiat.value;
 
-		let currencyObj = this.variables.currencies[ev.detail.type];
-		let value = (ev.detail.type == 'crypto') ? 
-			+ev.detail.targets.crypto.value : +ev.detail.targets.fiat.value;
-		let currencyCode = currencyObj[value].displayCode;
-
-		if (ev.detail.type == 'fiat') {
-			ev.detail.targets.ywg_c.innerHTML = currencyCode;
-		}
-
-		let tab = ev.detail.stateLib.getStateValue.call(ev.detail.stateLocalLib, 'xpay_tab');
-		if (tab == 'sell') {
+		if (ev.detail.type = 'sell') {
 			for (let i = 0; i < ev.detail.targets.paste_first_f2.length; i++) {
-				ev.detail.targets.paste_first_f2[i].innerHTML = currencyCode;
+				ev.detail.targets.paste_first_f2[i].innerHTML = ev.detail.targets.crypto.value;
 			}
 		}
 		let countingType = ev.detail.stateLib.getStateValue.call(
-			ev.detail.stateLocalLib, 'xpay_conting_type'
+			ev.detail.stateLocalLib, 'oero_conting_type'
 		);
 		let dataForEv = {
 				targets: ev.detail.targets,
@@ -79,12 +76,16 @@ export default {
 				variables: ev.detail.variables,
 		}; 
 		if (ev.detail.variables.countingData.counting) {
-			this.startEvent.call(this, 'change-counting', dataForEv);
+			let cusEv = this.CreateCustomEvent('change-counting', dataForEv);
+			this.startCustomEvent(cusEv);
 		} else {
 			let target = (ev.detail.type == 'crypto') ? 
 				ev.detail.targets.cryptoQ : ev.detail.targets.fiatQ;
 			target.value = '';
-			this.startEvent.call(this, 'currency-input-is-changed', dataForEv);
+			let cusEvForInput = this.CreateCustomEvent(
+				'currency-input-is-changed', dataForEv
+			);
+			this.startCustomEvent(cusEvForInput);
 		}
 	},
 
@@ -103,7 +104,7 @@ export default {
 				ev.detail.setData, ev.detail.type, ev.detail.targets
 			);
 			ev.detail.stateLib.setStateValue.call(
-				ev.detail.stateLocalLib, 'xpay_conting_type', ev.detail.type, time
+				ev.detail.stateLocalLib, 'oero_conting_type', ev.detail.type, time
 			);
 			ev.detail.stateLib.synch.call(
 				ev.detail.stateLib, ev.detail.stateGlobalLib, ev.detail.stateLocalLib
@@ -115,20 +116,24 @@ export default {
 				type: ev.detail.type,
 				variables: variables,
 			};
-
 			let target = (ev.detail.type == 'crypto') ? 
 				ev.detail.targets.cryptoQ : ev.detail.targets.fiatQ;
+
 			if (target.value != '') {
 				if (!variables.countingData.counting) {
-					this.startEvent.call(this, 'start-counting', dataForEv);
+					variables.countingData.counting = true;
+					let cusEv = this.CreateCustomEvent('start-counting', dataForEv);
+					this.startCustomEvent(cusEv);
 				} else {
-					this.startEvent.call(this, 'change-counting', dataForEv);
+					let cusEv = this.CreateCustomEvent('change-counting', dataForEv);
+					this.startCustomEvent(cusEv);
 				}
 			} else {
 				if (variables.countingData.counting) {
 					variables.countingData.counting = false;
 				}
-				this.startEvent.call(this, 'inputs-is-cleaned', dataForEv);
+				let cusEvToClean = this.CreateCustomEvent('inputs-is-cleaned', dataForEv);
+				this.startCustomEvent(cusEvToClean);
 			}					
 		}
 	},
@@ -142,28 +147,43 @@ export default {
 				this.variables.countingData
 			);
 		}
+		ev.detail.variables.countingData.variables = ev.detail.variables;
+		ev.detail.variables.countingData.targets = ev.detail.targets;
 		ev.detail.variables.countingData.customEvents = this;
 
 		let dataForEv = {
 			targets: ev.detail.targets, type: ev.detail.type, variables: ev.detail.variables,
 		};
-		this.startEvent.call(this, 'change-counting', dataForEv);
+		let cusEv = this.CreateCustomEvent('change-counting', dataForEv);
+		this.startCustomEvent(cusEv);
+		this.checkRate.start();
 	},
 
 	'change-counting': function (ev) {
 		this.eventDebag('change-counting');
 
 		let time = ev.detail.time || ev.detail.stateLib.getTime();
-		ev.detail.variables.countingData.event = ev;
-
 		ev.detail.stateLib.setStateValue.call(
-			ev.detail.stateLocalLib, 'xpay_conting_type', ev.detail.type, time
+			ev.detail.stateLocalLib, 'oero_conting_type', ev.detail.type, time
 		);
+
+		let toChange = ev.detail.variables.countingData;
+		toChange.mode = ev.detail.stateLib.getStateValue.call(
+			ev.detail.stateLocalLib, 'oero_tab'
+		);
+		if (ev.detail.type == 'crypto') {
+			toChange.input = ev.detail.targets.crypto.value;
+			toChange.output = ev.detail.targets.fiat.value;
+			toChange.quantity = ev.detail.targets.cryptoQ.value;
+		} else {
+			toChange.input = ev.detail.targets.fiat.value;
+			toChange.output = ev.detail.targets.crypto.value;
+			toChange.quantity = ev.detail.targets.fiatQ.value;
+		}
+
 		ev.detail.stateLib.synch.call(
 			ev.detail.stateLib, ev.detail.stateGlobalLib, ev.detail.stateLocalLib
 		);
-
-		ev.detail.variables.countingData.counting = true;
 		if (this.checkRate) {
 			if (!this.checkRate.isStarted()) {
 				this.checkRate.start();
@@ -177,55 +197,65 @@ export default {
 			this.checkRate.stop();
 		}
 		let countingType = ev.detail.stateLib.getStateValue.call(
-			ev.detail.stateLocalLib, 'xpay_conting_type'
+			ev.detail.stateLocalLib, 'oero_conting_type'
 		);
 		let time = ev.detail.time || ev.detail.stateLib.getTime();
-		let key = (countingType == 'crypto') ? 'xpay_fiat_quan' : 'xpay_crypto_quan';
-		ev.detail.stateLib.deleteStateValue.call(ev.detail.stateLocalLib, key, time);
-		ev.detail.stateLib.deleteStateValue.call(ev.detail.stateLocalLib, 'xpay_conting_type', time);
+		let key = (countingType == 'crypto') ? 'oero_fiat_quan' : 'oero_crypto_quan';
+		ev.detail.stateLib.setStateValue.call(
+			ev.detail.stateLocalLib, key, '', time
+		);
+		ev.detail.stateLib.setStateValue.call(
+			ev.detail.stateLocalLib, 'oero_conting_type', null, time
+		);
+
+		let toChange = ev.detail.variables.countingData;
+		toChange.input = null;
+		toChange.output = null;
+		toChange.quantity = null;
+		toChange.mode = null;
+
 		ev.detail.stateLib.synch.call(
 			ev.detail.stateLib, ev.detail.stateGlobalLib, ev.detail.stateLocalLib
 		);
 
-		// ev.detail.targets.ywg_q.innerHTML = '0';
-
-		let dataForEv = {targets: ev.detail.targets, variables: ev.detail.variables};
-		this.startEvent.call(this, 'counted', dataForEv);
+		let dataForEv = {
+			targets: ev.detail.targets, variables: ev.detail.variables,
+			value: ev.detail.value, rate: ev.detail.rate,
+		};
+		let cusEv = this.CreateCustomEvent('counted', dataForEv);
+		this.startCustomEvent(cusEv);
 	},
 
 	'counted': function(ev) {
 		this.eventDebag('counted');
 		let time = ev.detail.time || ev.detail.stateLib.getTime();
 		let countingType = ev.detail.stateLib.getStateValue.call(
-			ev.detail.stateLocalLib, 'xpay_conting_type'
+			ev.detail.stateLocalLib, 'oero_conting_type'
 		);
 
 		/* paste counting */
 		let key, target;
-		let value = (ev.detail.value && parseFloat(ev.detail.value)) ? 
-			parseFloat(ev.detail.value) : null;
 		if (countingType) {
 			if (countingType == 'crypto') {
 				target = ev.detail.targets.fiatQ;
-				key = 'xpay_fiat_quan';
+				key = 'oero_fiat_quan';
 			} else {
 				target = ev.detail.targets.cryptoQ;
-				key = 'xpay_crypto_quan';
+				key = 'oero_crypto_quan';
 			}
 			ev.detail.stateLib.setStateValue.call(
-				ev.detail.stateLocalLib, key, value, time
+				ev.detail.stateLocalLib, key, ev.detail.value, time
 			);
 			ev.detail.stateLib.setStateValue.call(
-				ev.detail.stateLocalLib, 'xpay_conting_rate', ev.detail.rate, time
+				ev.detail.stateLocalLib, 'oero_conting_rate', ev.detail.rate, time
 			);
 			ev.detail.stateLib.synch.call(
 				ev.detail.stateLib, ev.detail.stateGlobalLib, ev.detail.stateLocalLib
 			);
-			target.value = (value) ? value : '';
+			target.value = ev.detail.value;
 		}
 		/* paste ywg */
-		console.log();
-		ev.detail.targets.ywg_q.innerHTML = (value) ? ev.detail.targets.fiatQ.value : '0';
+		ev.detail.targets.ywg_q.innerHTML = (ev.detail.value) ? ev.detail.targets.fiatQ.value : '0';
 	},
 
 	'inputs-is-cleaned': function (ev) {
@@ -245,7 +275,7 @@ export default {
 		let data = ev.detail.lib.variables.timerData;
 		if (!data.begin) {
 			ev.detail.stateLib.setStateValue.call(
-				ev.detail.stateLocalLib, 'xpay_time', ev.detail.time, ev.detail.time
+				ev.detail.stateLocalLib, 'oero_time', ev.detail.time, ev.detail.time
 			);
 			ev.detail.stateLib.synch.call(
 				ev.detail.stateLib, ev.detail.stateGlobalLib, ev.detail.stateLocalLib
@@ -276,35 +306,43 @@ export default {
 		}
 		let time = ev.detail.time || ev.detail.stateLib.getTime();
 		ev.detail.variables.timerData.begin = null;
-		// ev.detail.variables.timerData.target = null;
-		deleteValue ('xpay_time', ev);
-		deleteValue ('xpay_data_is_sended', ev);
-		deleteValue ('xpay_wallet', ev);
+		ev.detail.variables.timerData.target = null;
+		ev.detail.stateLib.setStateValue.call(
+			ev.detail.stateLocalLib, 'oero_time', null, time
+		);
+		ev.detail.stateLib.setStateValue.call(
+			ev.detail.stateLocalLib, 'data_is_sended', null, time
+		);
+		ev.detail.stateLib.synch.call(
+			ev.detail.stateLib, ev.detail.stateGlobalLib, ev.detail.stateLocalLib
+		);
 
-		
 		let dataForEv = {
 			targets: ev.detail.targets, variables: this.variables, type: ev.detail.type
 		};
-		this.startEvent.call(this, 'clean-transaction', dataForEv);
-
-		function deleteValue (key, ev) {
-			ev.detail.stateLib.deleteStateValue.call(ev.detail.stateLocalLib, key, time);
-			ev.detail.stateLib.deleteStateValue.call(ev.detail.stateGlobalLib, key, time);
-		}
+		let cusEv = this.CreateCustomEvent('clean-transaction', dataForEv);
+		this.startCustomEvent(cusEv);
 	},
 
 	'clean-transaction': function(ev) {
 		this.eventDebag('clean-transaction');
 		/* clean quantity inputs */
 		let time = ev.detail.time || ev.detail.stateLib.getTime();
-		ev.detail.stateLib.deleteStateValue.call(ev.detail.stateLocalLib, 'xpay_crypto_quan', time);
-		ev.detail.stateLib.deleteStateValue.call(ev.detail.stateLocalLib, 'xpay_fiat_quan', time);
-		ev.detail.stateLib.deleteStateValue.call(ev.detail.stateLocalLib, 'xpay_conting_rate', time);
+		ev.detail.stateLib.setStateValue.call(
+			ev.detail.stateLocalLib, 'oero_crypto_quan', '', time
+		);
+		ev.detail.stateLib.setStateValue.call(
+			ev.detail.stateLocalLib, 'oero_fiat_quan', '', time
+		);
+		ev.detail.stateLib.setStateValue.call(
+			ev.detail.stateLocalLib, 'oero_conting_rate', null, time
+		);
 
 		let dataForEv = {
 			targets: ev.detail.targets, type: ev.detail.type, variables: ev.detail.variables,
 		};
-		this.startEvent.call(this, 'inputs-is-cleaned', dataForEv);
+		let cusEv = this.CreateCustomEvent('inputs-is-cleaned', dataForEv);
+		this.startCustomEvent(cusEv);
 
 
 		/* clean form2 */
@@ -337,7 +375,7 @@ export default {
 
 		/* clean form3 */
 		ev.detail.stateLib.setStateValue.call(
-			ev.detail.stateLocalLib, 'xpay_begin', false, time
+			ev.detail.stateLocalLib, 'oero_begin', false, time
 		);
 		ev.detail.setData.setTransFromState.call(
 			ev.detail.setData, ev.detail.type, ev.detail.targets, this
@@ -370,137 +408,88 @@ export default {
 		let closureThis = this;
 
 		let dataForEv = {
-			targets: ev.detail.targets, variables: ev.detail.variables, 
-			type: ev.detail.type, time: time,
+			targets: ev.detail.targets, 
+			variables: ev.detail.variables, 
+			type: ev.detail.type,
+			time: time,
 		};
 
 		// ev.detail.variables.countingData.counting = false;
 
 		document.addEventListener('counted', lastCounted);
 
-		function lastCounted() {
+		function lastCounted(ev) {
 			closureThis.checkRate.stop();
 			document.removeEventListener('counted', lastCounted);
-			startLogic()
+			startLogic(ev)
 		}
 
-		function startLogic() {
+		function startLogic(ev) {
 			if (type == 'sell') {
-				let cryptoValue = state.getStateValue.call(local, 'xpay_crypto');
-				let request = (cryptoValue == '3') ?
-					sendETHData.call(closureThis, closureEv) : sendSellData.call(closureThis, closureEv);
-				
+				let request = sendSellData();
 				requests.processingFetch(request, responseObj => {
-					if (!requests.responseIsNotOK(responseObj)) {
-						if (requests.bodyIsOK(responseObj)) {
-							let toState = (cryptoValue == '3') ? 
-								getETHResponseBody(responseObj) : getResponseBody(responseObj);
-							processingOK(toState);
-							closureThis.startEvent.call(
-								closureThis, 'transaction-is-started', dataForEv
-							);
+					if (responseObj.ok) {
+						if (responseObj.body.status == '200') {
+							/* костыль для ойро */
+							changeModal(true, 'buy-end');
+							startEvent('clean-transaction');
+							/***************************************/
+
+							// let tocken = responseObj.body.result.transaction_token;
+							// state.setStateValue.call(local, 'data_is_sended', tocken, time);
+							// state.setStateValue.call(global, 'data_is_sended', tocken, time);
+							// startEvent('transaction-is-started');
 						} else {
-							processingErors(responseObj)
+							if 	(	responseObj.body.errors.hasOwnProperty('email') && 
+										responseObj.body.errors.hasOwnProperty('iban')
+									)
+							{
+								changeModal(true, 'custom-message', closureThis.responseErrors.both);
+								closureEv.detail.targets.mail_si.parentElement.classList.add('error');
+								closureEv.detail.targets.iban_si.parentElement.classList.add('error');
+							} else if (responseObj.body.errors.hasOwnProperty('email')) {
+								changeModal(true, 'custom-message', closureThis.responseErrors.email);
+								closureEv.detail.targets.mail_si.parentElement.classList.add('error');
+							} else {
+								changeModal(true, 'custom-message', closureThis.responseErrors.iban);
+								closureEv.detail.targets.iban_si.parentElement.classList.add('error');
+							}
+							closureThis.checkRate.start();
 						}
 					} else {
-						processingNot200(responseObj, closureThis, dataForEv, changeModal);
+						changeModal(
+							true, 'destroyed', state.getStateValue.call(local, 'oero_crypto')
+						);
+						startEvent('clean-transaction');
 					}
 				});
 			} else {
-				closureThis.startEvent.call(closureThis, 'transaction-is-started', dataForEv);
+				startEvent('transaction-is-started');
 			}
 		}
 
-		function sendSellData(ev) {
+		function sendSellData() {
 			return requests.sendPOSTRequest(
-				requests.server, '/crypto/sell/create', getSellData.call(this, ev)
+				requests.server, '/server/creates/conversions/steps/ones', getSellData()
 			);
 
-			function getSellData(ev) {
-				let calcObj = this.getCalculateObj(ev);
-				return {
-          "conversion_data": {
-            "inputCurrency": calcObj.inputCur,
-            "outputCurrency": calcObj.outputCur,
-            "inputQuantity": calcObj.inputQuan,
-            "outputQuantity": calcObj.outputQuan
-          },
-          "transaction_sales_data": {
-            "beneficiaryName": state.getStateValue.call(db, 'xpay_sell_benif_name'),
-            "bankName": state.getStateValue.call(db, 'xpay_sell_bank_name'),
-            "swift": state.getStateValue.call(db, 'xpay_sell_swift'),
-            "iban": state.getStateValue.call(db, 'xpay_sell_iban').replace(/ /g, '')
-          },
-          "email": state.getStateValue.call(db, 'xpay_sell_mail'),
-          "phone": null
-        };
-			}
-		}
-
-		function sendETHData(ev) {
-			return requests.sendPOSTRequest(
-				requests.server, '/server/creates/conversions/steps/ones', getETHData.call(this, ev)
-			);
-
-			function getETHData(ev) {
-				let data = {}, tempValue;
-
-				tempValue = state.getStateValue.call(local, 'xpay_crypto');
-				data.own = this.toCurrencyCode(
-					'crypto', tempValue, closureEv.detail.variables.currencies
-				);
-
-				tempValue = state.getStateValue.call(local, 'xpay_fiat');
-				data.want = this.toCurrencyCode(
-					'fiat', tempValue, closureEv.detail.variables.currencies
-				);
-				data.amount = state.getStateValue.call(local, 'xpay_crypto_quan');
-				data.email = state.getStateValue.call(db, 'xpay_sell_mail');
-				data.crypto_wallet = state.getStateValue.call(db, 'xpay_sell_wallet');
-				data.bank_name = state.getStateValue.call(db, 'xpay_sell_bank_name');
-				data.swift = state.getStateValue.call(db, 'xpay_sell_swift');
-				data.iban = state.getStateValue.call(db, 'xpay_sell_iban').replace(/ /g, '');
+			function getSellData() {
+				let data = {};
+				data.own = state.getStateValue.call(local, 'oero_crypto');
+				data.want = state.getStateValue.call(local, 'oero_fiat');
+				data.amount = state.getStateValue.call(local, 'oero_crypto_quan');
+				data.email = state.getStateValue.call(db, 'oero_sell_mail');
+				data.crypto_wallet = state.getStateValue.call(db, 'oero_sell_wallet');
+				data.bank_name = state.getStateValue.call(db, 'oero_sell_bank_name');
+				data.swift = state.getStateValue.call(db, 'oero_sell_swift');
+				data.iban = state.getStateValue.call(db, 'oero_sell_iban');
 				return data;
 			}
 		}
 
-		function getETHResponseBody(responseObj) {
-			return {
-				id: responseObj.body.result.transaction_token, 
-				wallet: responseObj.body.result.our_crypto_wallet
-			}
-		}
-
-		function getResponseBody(responseObj) {
-			return {id: responseObj.body.transaction_id, wallet: responseObj.body.payment_details}
-		}
-
-		function processingErors(responseObj) {
-			let text = '';
-			if 	(	responseObj.body.errors.hasOwnProperty('email') && 
-						responseObj.body.errors.hasOwnProperty('iban')
-					)
-			{
-				text = closureThis.responseErrors.both;
-				closureEv.detail.targets.mail_si.parentElement.classList.add('error');
-				closureEv.detail.targets.iban_si.parentElement.classList.add('error');
-			} else if (responseObj.body.errors.hasOwnProperty('email')) {
-				text = closureThis.responseErrors.email;
-				closureEv.detail.targets.mail_si.parentElement.classList.add('error');
-			} else {
-				text = closureThis.responseErrors.iban;
-				closureEv.detail.targets.iban_si.parentElement.classList.add('error');
-			}
-			changeModal(true, 'custom-message', text);
-			closureThis.checkRate.start();
-		}
-
-		function processingOK(toState) {
-			// console.log(toState);
-			state.setStateValue.call(local, 'xpay_data_is_sended', toState.id, time);
-			state.setStateValue.call(local, 'xpay_wallet', toState.wallet, time);
-			state.setStateValue.call(global, 'xpay_data_is_sended', toState.id, time);
-			state.setStateValue.call(global, 'xpay_wallet', toState.wallet, time);
+		function startEvent(key) {
+			let cusEv = closureThis.CreateCustomEvent(key, dataForEv);
+			closureThis.startCustomEvent(cusEv);
 		}
 	}, 
 
@@ -509,11 +498,11 @@ export default {
 		const changeModal = ev.detail.modal.bind(ev.detail.targets);
 
 		ev.detail.stateLib.setStateValue.call(
-			ev.detail.stateLocalLib, 'xpay_begin', true, ev.detail.time
+			ev.detail.stateLocalLib, 'oero_begin', true, ev.detail.time
 		);
 		// остановить калькулятор 
-		ev.detail.stateLib.deleteStateValue.call(
-			ev.detail.stateLocalLib, 'xpay_conting_type', ev.detail.time
+		ev.detail.stateLib.setStateValue.call(
+			ev.detail.stateLocalLib, 'oero_conting_type', null, ev.detail.time
 		);
 		
 		//если sell запустить счетчик
@@ -523,12 +512,9 @@ export default {
 				type: ev.detail.type, time: ev.detail.time,
 			};
 			dataForEv.lib = this;
-			this.startEvent.call(this, 'start-timer', dataForEv);
+			let cusEv = this.CreateCustomEvent('start-timer', dataForEv);
+			this.startCustomEvent(cusEv);
 		}
-
-		// установить текст кнопки
-		ev.detail.targets.ex_bn.innerText = (ev.detail.type == 'sell') ? 
-			this.buttonText.paid : this.buttonText.send;
 
 		// записать в DB данные 2-го шага
 		ev.detail.setData.setDataInDB.call(
@@ -560,43 +546,43 @@ export default {
 			this.timer.stop();
 		}
 
-		let state = ev.detail.stateLib;
-		let local = ev.detail.stateLocalLib;
-		let db = ev.detail.stateDBLib;
 		let requests = ev.detail.requests;
 		let closureThis = this;
 
-		let tab = state.getStateValue.call(local, 'xpay_tab');
-		let cryptoValue = state.getStateValue.call(local, 'xpay_crypto');
-		let id = state.getStateValue.call(local, 'xpay_data_is_sended');
-
-		let dataForEv = {
-			targets: ev.detail.targets, variables: ev.detail.variables, type: ev.detail.type
-		};
-
+		let tab = ev.detail.stateLib.getStateValue.call(
+			ev.detail.stateLocalLib, 'oero_tab'
+		);
 		if (tab == 'sell') {
-			iPaid(id);
+			iPaid(ev.detail.stateLib.getStateValue.call(
+				ev.detail.stateLocalLib, 'data_is_sended'
+			));
 		} else {
 			buyRequest(getBuyData(ev));
 		}
 
-		function iPaid(id) {
-			let route = (cryptoValue == '3') ? '/server/paids' : '/crypto/sell/check';
-			let toSend = (cryptoValue == '3') ? 
-				{transaction_token: id} : {transaction_id: id};
-
-			let request = requests.sendPOSTRequest(requests.server, route, toSend);
+		function iPaid(token) {
+			let toSend = {
+				transaction_token: token
+			}
+			let request = requests.sendPOSTRequest(requests.server, '/server/paids', toSend);
 			requests.processingFetch(request, responseObj => {
-				if (requests.responseIsNotOK(responseObj) === 0) {
-					if (requests.bodyIsOK(responseObj)) {
+				if (responseObj.ok) {
+					if (responseObj.body.status == '200') {
 						changeModal(true, 'sell-end');
-						closureThis.startEvent.call(closureThis, 'end-timer', dataForEv);
+						let dataForEv = {
+							targets: closureEv.detail.targets, 
+							variables: closureEv.detail.variables, 
+							type: closureEv.detail.type
+						};
+						let cusEv = closureThis.CreateCustomEvent('end-timer', dataForEv);
+						closureThis.startCustomEvent(cusEv);
 					} else {
 						changeModal(true, 'not-paid');
 						closureThis.timer.start();
 					}
 				} else {
-					processingNot200(responseObj, closureThis, dataForEv, changeModal);
+					changeModal(true, 'server-not-available');
+					closureThis.timer.start();
 				}
 			});
 		}
@@ -604,35 +590,37 @@ export default {
 		function buyRequest(toSend) {
 			let request = requests.sendPOSTRequest(requests.server, '/crypto/buy', toSend);
 			requests.processingFetch(request, responseObj => {
-				if (!requests.responseIsNotOK(responseObj)) {
+				console.log(responseObj);
+				if (responseObj.ok) {
 					changeModal(true, 'buy-end');
-					closureThis.startEvent.call(closureThis, 'clean-transaction', dataForEv);
+					let dataForEv = {
+						targets: ev.detail.targets, variables: ev.detail.variables, type: ev.detail.type
+					};
+					let cusEv = closureThis.CreateCustomEvent('clean-transaction', dataForEv);
+					closureThis.startCustomEvent(cusEv);
 				} else {
-					processingNot200(responseObj, closureThis, dataForEv, changeModal);
+					changeModal(true, 'server-not-available');
 				}
 			});
 		}
 
 		function getBuyData(ev) {
-			let data = {}, tempValue;
+			let data = {};
+			let state = ev.detail.stateLib;
+			let local = ev.detail.stateLocalLib;
+			let db = ev.detail.stateDBLib;
 
-			data["email"] = state.getStateValue.call(db, 'xpay_buy_mail');
-			data["phone"] = state.getStateValue.call(db, 'xpay_buy_phone')
+			data["email"] = state.getStateValue.call(db, 'oero_buy_mail');
+			data["phone"] = state.getStateValue.call(db, 'oero_buy_phone')
 				.replace(/\+/g, '').replace(/\(/g, '').replace(/\)/g, '').replace(/\-/g, '');
-			data["bankName"] = state.getStateValue.call(db, 'xpay_buy_bank_name');
-			data["bankCountry"] = state.getStateValue.call(db, 'xpay_buy_bank_country');
-			data["beneficiaryCountry"] = state.getStateValue.call(db, 'xpay_buy_benif_country');
-			tempValue = state.getStateValue.call(local, 'xpay_fiat');
-			data["fromCurrency"] = closureThis.toCurrencyCode(
-				'fiat', tempValue, ev.detail.variables.currencies
-			);
-			tempValue = state.getStateValue.call(local, 'xpay_crypto');
-			data["toCurrency"] = closureThis.toCurrencyCode(
-				'crypto', tempValue, ev.detail.variables.currencies
-			);
-			data["inputCurrencyAmount"] = state.getStateValue.call(local, 'xpay_fiat_quan');
-			data["outputCurrencyAmount"] = state.getStateValue.call(local, 'xpay_crypto_quan');
-			data["exchangeRate"] = state.getStateValue.call(local, 'xpay_conting_rate');
+			data["bankName"] = state.getStateValue.call(db, 'oero_buy_bank_name');
+			data["bankCountry"] = state.getStateValue.call(db, 'oero_buy_bank_country');
+			data["beneficiaryCountry"] = state.getStateValue.call(db, 'oero_buy_benif_country');
+			data["fromCurrency"] = state.getStateValue.call(local, 'oero_fiat');
+			data["toCurrency"] = state.getStateValue.call(local, 'oero_crypto');
+			data["inputCurrencyAmount"] = state.getStateValue.call(local, 'oero_fiat_quan');
+			data["outputCurrencyAmount"] = state.getStateValue.call(local, 'oero_crypto_quan');
+			data["exchangeRate"] = state.getStateValue.call(local, 'oero_conting_rate');
 			return {
 				"transaction": data
 			};

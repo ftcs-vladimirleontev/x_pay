@@ -33,6 +33,7 @@ export default {
 		let options = {
 			path: '/'
 		};
+		if (!value) {options['max-age'] = -1;}
 		// if (options.expires.toUTCString) {
 		//   options.expires = options.expires.toUTCString();
 		// }
@@ -47,10 +48,8 @@ export default {
 		document.cookie = updatedCookie;
 	},
 
-	deleteValue: function (name) {
-		setCookie(name, "", {
-			'max-age': -1
-		})
+	deleteValue: function (name, setter) {
+		setter(name, "")
 	},
 
 	getAll: function(all_keys, getter, correcter) {

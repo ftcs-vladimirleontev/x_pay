@@ -1,0 +1,62 @@
+[
+    {
+				"URL": "https://srv.bitfiat.online/service/currencies",
+        "method": "GET",
+        "response": {
+            "crypto": [
+                {
+                    "id": 2,
+                    "name": "Bitcoin",
+                    "displayCode": "BTC",
+                    "displayDecimals": 5
+                }
+            ],
+            "fiat": [
+                {
+                    "id": 1,
+                    "name": "Euro",
+                    "displayCode": "EUR",
+                    "displayDecimals": 2
+                }
+            ]
+        }
+    },
+    {
+				"URL": "https://srv.bitfiat.online/service/calculate",
+        "method": "POST",
+        "request": {
+            "conversion_data": {
+                "inputCurrency": 4,
+                "outputCurrency": 2,
+                "inputQuantity": null,
+                "outputQuantity": "30000"
+            }
+        },
+        "response": {
+            "result": "3.02"
+        }
+    },
+    {
+        "URI": "https://srv.bitfiat.online/crypto/sell/create",
+        "method": "POST",
+        "request": {
+            "conversion_data": {
+                "inputCurrency": 1,
+                "outputCurrency": 2,
+                "inputQuantity": "1",
+                "outputQuantity": null
+            },
+            "transaction_sales_data": {
+                "bankName": "test",
+                "bankCountry": "test",
+                "beneficiaryCountry": "test"
+            },
+            "email": "test@test.com",
+            "phone": "+987654321"
+        },
+        "response": {
+            "payment_details": "Пака не работает",
+            "transaction_id": 1
+        }
+    }
+]

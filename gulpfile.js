@@ -39,7 +39,7 @@ const gulp = require('gulp'),
 			gulpWebpack = require('webpack-stream'),
 
 			/* image */
-			// imagemin = require('gulp-imagemin'),
+			imagemin = require('gulp-imagemin'),
 
 			/* watch */
 			browserSync = require('browser-sync').create(),
@@ -137,38 +137,40 @@ gulp.task('build:js', gulp.series('clear:js', 'create:js'));
 /****************************************************/
 /* image */
 /****************************************************/
-// gulp.task('create:img-min', (done) => {
-// 	gulp.series('clear:img');
-//   gulp.src("src/img/*.*")
-//     .pipe(imagemin(
-//       [
-//         imagemin.gifsicle({ interlaced: true }),
-//         imagemin.jpegtran({ progressive: true }),
-//         imagemin.optipng({ optimizationLevel: 5 }),
-//         imagemin.svgo({
-//           plugins: [
-//             { removeViewBox: true },
-//             { clearupIDs: false }
-//           ]
-//         })
-//       ]
-//     ))
-//     .pipe(gulp.dest("build/img"));
-//   done();
-// });
+gulp.task('clear:img', function() {
+	return del(`${outputDir}/img`)
+});
+
+gulp.task('create:img-min', (done) => {
+  gulp.src("src/img/**/*.*")
+		.pipe(imagemin([
+			imagemin.gifsicle({interlaced: true}),
+			imagemin.mozjpeg({quality: 75, progressive: true}),
+			imagemin.optipng({optimizationLevel: 5}),
+			imagemin.svgo({
+					plugins: [
+							{removeViewBox: true},
+							{cleanupIDs: false}
+					]
+			})
+		]))
+    .pipe(gulp.dest(`${outputDir}/img`));
+  done();
+});
 // ...покурить тему замены только измененных файлов...
 // ...покурить тему удаленных и вновь созданных файлов...
 // ...покурить тему минификации...
 
-gulp.task('clear:img', function() {
-	return del(`${outputDir}/img`)
-});
+
 gulp.task('create:img', function() {
 	return gulp
 		.src(`${inputDir}/img/**/*.*`)
 		.pipe(gulp.dest(`${outputDir}/img`));
 });
-gulp.task('build:img', gulp.series('clear:img', 'create:img'));
+
+// gulp.task('build:img', gulp.series('clear:img', 'create:img'));
+gulp.task('build:img', gulp.series('clear:img', 'create:img-min'));
+
 /****************************************************/
 /* fonts */
 /****************************************************/
@@ -190,6 +192,7 @@ gulp.task('clear', function() {
 gulp.task('build', gulp.parallel(
 	'build:html', 'build:css', 'build:js', 'build:img', 'build:fonts'
 ));
+gulp.task('build:code', gulp.parallel('build:html', 'build:css', 'build:js'));
 /****************************************************/
 /* browserSync */
 /****************************************************/

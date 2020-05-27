@@ -24,7 +24,7 @@ export default {
 	},
 
 	deleteStateValue: function (key, time) {
-		this.deleteValue(key);
+		this.deleteValue(key, this.setValue);
 		this.setValue('xpay_last_change', this.correctDataIn(time));
 	},
 

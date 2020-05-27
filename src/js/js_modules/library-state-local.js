@@ -22,7 +22,8 @@ export default {
 			time: null,
 			data_sended: null,
 			conting_type: null,
-			conting_rate: null
+			conting_rate: null,
+			wallet: null
 		};
 		sessionStorage.setItem('xpay', JSON.stringify(defaultObj));
 
@@ -56,12 +57,14 @@ export default {
 				return state.begin;
 			case 'xpay_time':
 				return state.time;
-			case 'data_is_sended':
+			case 'xpay_data_is_sended':
 				return state.data_sended;
 			case 'xpay_conting_type':
 				return state.conting_type;
 			case 'xpay_conting_rate':
 				return state.conting_rate;
+			case 'xpay_wallet':
+				return state.wallet;
 		}
 	},
 
@@ -96,7 +99,7 @@ export default {
 			case 'xpay_time':
 				state.time = value;
 				break;
-			case 'data_is_sended':
+			case 'xpay_data_is_sended':
 				state.data_sended = value;
 				break;
 			case 'xpay_conting_type':
@@ -105,12 +108,15 @@ export default {
 			case 'xpay_conting_rate':
 				state.conting_rate = value;
 				break;
+			case 'xpay_wallet':
+				state.wallet = value;
+				break;
 		}
 		sessionStorage.setItem('xpay', JSON.stringify(state));
 		return true;
 	},
 
-	deleteValue: function (name) {
+	deleteValue: function (name, setter) {
 		let state = JSON.parse(sessionStorage.getItem('xpay'));
 		if (!state) {return false;}
 		switch (name) {
@@ -141,7 +147,7 @@ export default {
 			case 'xpay_time':
 				state.time = null;
 				break;
-			case 'data_is_sended':
+			case 'xpay_data_is_sended':
 				state.data_sended = null;
 				break;
 			case 'xpay_conting_type':
@@ -149,6 +155,9 @@ export default {
 				break;
 			case 'xpay_conting_rate':
 				state.conting_rate = null;
+				break;
+			case 'xpay_wallet':
+				state.wallet = null;
 				break;
 		}
 		sessionStorage.setItem('xpay', JSON.stringify(state));
@@ -174,10 +183,12 @@ export default {
 	},
 
 	correctDataIn: function (value) {
-		return (typeof value == 'number') ? '' + value : value;
+		return 	(!value) ? null :
+						(typeof value == 'number') ? '' + value : value;
+						
 	},
 
 	correctDataFrom: function (value) {
-		return value;
+		return 	(value === null) ? '' : value;
 	},
 }

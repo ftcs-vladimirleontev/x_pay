@@ -28,7 +28,7 @@ export default function(tab) {
 
 	if 	(
 				stateLib.getStateValue.call(stateLocalLib, 'xpay_tab') == 'sell' &&
-				stateLib.getStateValue.call(stateLocalLib, 'xpay_crypto') == 'ETH'
+				stateLib.getStateValue.call(stateLocalLib, 'xpay_crypto') == '3'
 			) 
 	{
 		if 	(	
@@ -42,7 +42,7 @@ export default function(tab) {
 	}
 	
 	if 	(stateLib.getStateValue.call(stateLocalLib, 'xpay_tab') == 'sell') {
-		if 	(!validateIBAN(checkArray[5].value)) {
+		if (!validateIBAN(checkArray[5].value.replace(/ /g, ''))) {
 			errors += '5';
 		};
 	}

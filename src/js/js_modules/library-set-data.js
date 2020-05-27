@@ -1,7 +1,7 @@
 import stateLib from './library-state.js';
 import stateLocalLib from './library-state-local.js';
 import stateDBLib from './library-state-db.js';
-import getWallet from './method_getWallet.js';
+import getWallet from './logic_getETHWallet.js';
 
 // this = this library
 export default {
@@ -14,7 +14,7 @@ export default {
 		let value = (type == 'crypto') ? 
 								this.stateLib.getStateValue.call(this.stateLocalLib, 'xpay_crypto') : 
 								this.stateLib.getStateValue.call(this.stateLocalLib, 'xpay_fiat');
-		target.value = value;
+		target.value = value || target.dataset.default;
 	},
 
 	setDropdownInState: function (type, TARGETS) {
@@ -137,21 +137,16 @@ export default {
 		);
 		fiatQTarget.value = this.stateLib.getStateValue.call(this.stateLocalLib, 'xpay_fiat_quan');
 		if (type == 'sell') {
-			let prom = setWallet();
-			prom.then(resolve => {
-				TARGETS.walletX_so.value = (begin) ? resolve : '';
-			})
+			TARGETS.walletX_so.value = (begin) ? 
+				this.stateLib.getStateValue.call(this.stateLocalLib, 'xpay_wallet') : '';
 			TARGETS.iban_so.value = (begin) ? 
 				this.stateLib.getStateValue.call(this.stateDBLib, 'xpay_sell_iban') : '';
 			
 			let time = this.stateLib.getStateValue.call(this.stateLocalLib, 'xpay_time');
 			if (time) {
 				let dataForEv = {type: type, time: time, lib: customEvents, targets: TARGETS};
-				let cusEv = customEvents.CreateCustomEvent('start-timer', dataForEv);
-				customEvents.startCustomEvent(cusEv);
+				customEvents.startEvent.call(customEvents, 'start-timer', dataForEv);
 			}
-			TARGETS.ex_bn.innerText = (slide == '1' || slide == '2') ? 
-				customEvents.buttonText.next : customEvents.buttonText.paid;
 		} else {
 			let countries = JSON.parse(sessionStorage.getItem('countries'));
 			let country;
@@ -165,8 +160,6 @@ export default {
 				this.stateLib.getStateValue.call(this.stateDBLib, 'xpay_buy_mail') : '';
 			TARGETS.phone_bo.value = (begin) ? 
 				this.stateLib.getStateValue.call(this.stateDBLib, 'xpay_buy_phone') : '';
-			TARGETS.ex_bn.innerText = (slide == '1' || slide == '2') ? 
-				customEvents.buttonText.next : customEvents.buttonText.send;
 		}
 
 		let cryptoName = customEvents.variables.currencies.crypto[TARGETS.crypto.value].displayCode;

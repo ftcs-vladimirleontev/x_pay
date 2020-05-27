@@ -63,7 +63,7 @@ body {
 .content__section_sec1 {
 		height: 640px;
 		display: none;
-		background: url(../img/header/bg-header-coin3.png) no-repeat;
+		background: url(../img/bg-header-coin3.png) no-repeat;
 		background-position: 108% -50%;
 		position: relative;
 		/* background-size: 100%; */

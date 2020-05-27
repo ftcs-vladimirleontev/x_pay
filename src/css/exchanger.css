@@ -228,7 +228,7 @@
 	content: "";
 	width: 10px;
 	height: 8px;
-	background-image: url(../img/header/arrow.png);
+	background-image: url(../img/arrow.png);
 	background-repeat: no-repeat;
 	position: absolute;
 	right: 0;
@@ -238,7 +238,7 @@
 	content: "";
 	width: 10px;
 	height: 8px;
-	background-image: url(../img/header/arrow.png);
+	background-image: url(../img/arrow.png);
 	background-repeat: no-repeat;
 	position: absolute;
 	right: 20px;

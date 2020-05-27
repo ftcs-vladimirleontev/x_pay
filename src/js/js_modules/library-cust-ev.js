@@ -68,11 +68,6 @@ export default {
 			counting: false,
 			customEvents: null,
 			event: null,
-			// targets: null,
-			// mode: null,
-			// input: null,
-			// output: null,
-			// quantity: null,
 		},
 		timerData: {
 			begin: null,
@@ -107,81 +102,77 @@ export default {
 		return new CustomEvent(name, to_event);
 	},
 
-	startCustomEvent: function (event) {
-		document.dispatchEvent(event);
+	startEvent: function (key, dataForEv) {
+		let cusEv = this.CreateCustomEvent(key, dataForEv);
+		document.dispatchEvent(cusEv);
 	},
 
 	getIntervalFunction: interval,
 
 	callbackToCheckRate: function (data) {
 		let ev = data.event;
+		let dataForEv = {targets: ev.detail.targets, variables: ev.detail.variables};
+		if (data.counting) {
+			let requests = ev.detail.requests;
+			let ROUTE = '/service/calculate';
+			let request = requests.sendPOSTRequest(
+				requests.server, ROUTE, getRequestBody(data.customEvents.getCalculateObj(ev))
+			);
+			requests.processingFetch(request, responseObj => {
+				dataForEv.value = responseObj.body.result;
+				dataForEv.rate = responseObj.body.exchangeRate;
+				data.customEvents.startEvent.call(data.customEvents, 'counted', dataForEv);
+			});
+		} else {
+			dataForEv.value = '';
+			dataForEv.rate = '';
+			data.customEvents.startEvent.call(data.customEvents, 'end-counting', dataForEv);
+		}
+
+		function getRequestBody(calcObj) {
+			return {
+				"conversion_data": {
+						"inputCurrency": calcObj.inputCur,
+						"outputCurrency": calcObj.outputCur,
+						"inputQuantity": calcObj.inputQuan,
+						"outputQuantity": calcObj.outputQuan
+				}
+			}
+		}
+	},
+
+	getCalculateObj: function(ev) {
 		let state = ev.detail.stateLib;
 		let local = ev.detail.stateLocalLib;
-		let requests = ev.detail.requests;
-
 		let mode = state.getStateValue.call(local, 'xpay_tab');
 		let type = state.getStateValue.call(local, 'xpay_conting_type');
-		let input, output, quantity, amount;
+		let inputCur, outputCur, inputQuan, outputQuan, quantity, amount;
 
-		let ROUTE = (mode == 'sell') ? '/server/pair/' : '/crypto/buy/calculate';
-		// let ROUTE = (mode == 'sell') ? '/crypto/sell/calculate' : '/crypto/buy/calculate';
-		if (type == 'crypto') {
-			// input = ev.detail.targets.crypto.value;
-			// output = ev.detail.targets.fiat.value;
-			input = toCurrencyCode('crypto', ev.detail.targets.crypto.value);
-			output = toCurrencyCode('fiat', ev.detail.targets.fiat.value);
-			quantity = ev.detail.targets.cryptoQ.value;
-		} else {
-			// input = ev.detail.targets.fiat.value;
-			// output = ev.detail.targets.crypto.value;
-			input = toCurrencyCode('fiat', ev.detail.targets.fiat.value);
-			output = toCurrencyCode('crypto', ev.detail.targets.crypto.value);
-			quantity = ev.detail.targets.fiatQ.value;
-		}
+		quantity = (type == 'crypto') ? 
+			state.getStateValue.call(local, 'xpay_crypto_quan') : 
+			state.getStateValue.call(local, 'xpay_fiat_quan');
 		amount = quantity.replace(',', '.');
-
-		let requestRoute = (mode == 'buy') ? 
-			getBuyURL(ROUTE, input, output, amount) : getSellURL(ROUTE, input, output, amount);
-		// let requestRoute = getURL(ROUTE, data.input, data.output, amount);
-		let request = requests.sendGETRequest(requests.server, requestRoute);
-		requests.processingFetch(request, responseObj => {
-			let value = (mode == 'buy') ? responseObj.body.amount : responseObj.body;
-			let rate = (mode == 'buy') ? responseObj.body.exchangeRate : null;
-
-			let dataForEv = {targets: ev.detail.targets, variables: ev.detail.variables};
-			dataForEv.value = (data.counting) ? value : '';
-			dataForEv.rate = (data.counting) ? rate : null;
-			let key = (data.counting) ? 'counted' : 'end-counting';
-			let cusEv = data.customEvents.CreateCustomEvent(key, dataForEv);
-			data.customEvents.startCustomEvent(cusEv);
-		});
-
-		function toCurrencyCode(type, id) {
-			let curObj = (type == 'crypto') ? 
-				ev.detail.variables.currencies.crypto : ev.detail.variables.currencies.fiat;
-			return curObj[id].displayCode;
+		inputCur = (mode == 'sell') ? 
+			state.getStateValue.call(local, 'xpay_crypto') : 
+			state.getStateValue.call(local, 'xpay_fiat');
+		outputCur = (mode == 'sell') ? 
+			state.getStateValue.call(local, 'xpay_fiat') :
+			state.getStateValue.call(local, 'xpay_crypto');
+		if (mode == 'sell') {
+			inputQuan = (type == 'crypto') ? amount : null;
+			outputQuan = (type == 'crypto') ? null : amount;
+		} else {
+			inputQuan = (type == 'crypto') ? null : amount;
+			outputQuan = (type == 'crypto') ? amount : null;
 		}
-
-	
-		function getBuyURL(ROUTE, input, output, quantity) {
-			let entering = 'entering=' + input;
-			let calculate = 'calculate=' + output;
-			let amount = 'quantity=' + quantity;
-			let params = '?' + entering + '&' + calculate + '&' + amount
-			return ROUTE + params;
+		return {
+			inputCur: inputCur, outputCur: outputCur, inputQuan: inputQuan, outputQuan: outputQuan
 		}
+	},
 
-		function getSellURL(ROUTE, input, output, quantity) {
-			return (ROUTE + input + '/' + output + '/' + quantity);
-		}
-
-		function getURL(ROUTE, input, output, quantity) {
-			let entering = 'entering=' + input;
-			let calculate = 'calculate=' + output;
-			let amount = 'quantity=' + quantity;
-			let params = '?' + entering + '&' + calculate + '&' + amount
-			return ROUTE + params;
-		}
+	toCurrencyCode: function (type, id, currencies) {
+		let curObj = (type == 'crypto') ? currencies.crypto : currencies.fiat;
+		return curObj[id].displayCode;
 	},
 
 	callbackTimer: function (data) {
@@ -193,8 +184,7 @@ export default {
 			let dataForEv = {
 				targets: data.targets, variables: data.customEvents.variables, type: data.type
 			};
-			let cusEv = data.customEvents.CreateCustomEvent('end-timer', dataForEv);
-			data.customEvents.startCustomEvent(cusEv);
+			data.customEvents.startEvent.call(data.customEvents, 'end-timer', dataForEv);
 			data.changeModal(true, 'time-is-up');
 		} else {
 			setTime(timeLeft, data);

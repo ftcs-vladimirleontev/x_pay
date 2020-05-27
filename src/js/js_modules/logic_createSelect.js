@@ -1,10 +1,10 @@
-function createSelect(type, target, data) {
+function createSelect(type, target, data, defaultValue) {
 	let flag = true;
 	let output = '';
 	
 	for (let key in data) {
 		if (flag) {
-			target.dataset.default = key;
+			target.dataset.default = defaultValue || key;
 			flag = false;
 		}
 		let temtlate;

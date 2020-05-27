@@ -2,6 +2,7 @@
 	"button_close": "close",
 	"button_cancel": "calcel",
 	"button_d": "delete application",
+	"button_reload": "reload the page",
 
 	"text": {
 		"confirm": "If you delete an application, all information will be lost",
@@ -14,6 +15,12 @@
 		"no_data_of_numbers": "Please enter some information for currency exchange",
 		"server_not_available": "Sorry, but the server is unavailable. Please try again later",
 		"accept_si": "Sorry, but you must accept the service's rules",
-		"time_is_up": "Your time is up. The transaction was canceled automatically"
+		"time_is_up": "Your time is up. The transaction was canceled automatically",
+		"null_data": "Transaction data cannot be zero",
+		"timer_to_reload": {
+			"if_press_button": "If you click the \"reload the page\" button, the page will be reloaded.",
+			"reload_after": "The page will reload automatically in ",
+			"unit_of_time": "seconds"
+		}
 	}
 }

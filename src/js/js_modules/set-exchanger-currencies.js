@@ -19,7 +19,8 @@ export default function(data, customEvents) {
 
 	let dataForCreateSelect = [currency.crypto, currency.fiat];
 	for (let i = 0; i < targets.length; i++) {
-		createSelect('currency', targets[i], dataForCreateSelect[i]);
+		let defaultCur = (i == 0) ? '3' : '4';
+		createSelect('currency', targets[i], dataForCreateSelect[i], defaultCur);
 	}
 }
 

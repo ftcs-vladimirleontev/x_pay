@@ -1,4 +1,5 @@
 import text from '../source/modal.json';
+import reloadPage from './logic_reloadPage.js';
 // this = TARGETS
 export default function(switcher, type, data) {
 	if (switcher) {
@@ -66,6 +67,15 @@ export default function(switcher, type, data) {
 				this.modal_bc.innerHTML = text.button_close;
 				this.modal.classList.add('active');
 				break;
+			case 'null-data':
+				this.modal_a.classList.add('d-none');
+				this.modal_t.classList.remove('d-none');
+				this.modal_b.classList.remove('d-none');
+				this.modal_bd.classList.add('d-none');
+				this.modal_t.innerHTML = text.text.null_data;
+				this.modal_bc.innerHTML = text.button_close;
+				this.modal.classList.add('active');
+				break;
 			case 'accept_si':
 				this.modal_a.classList.add('d-none');
 				this.modal_t.classList.remove('d-none');
@@ -102,6 +112,29 @@ export default function(switcher, type, data) {
 				this.modal_bc.innerHTML = text.button_close;
 				this.modal.classList.add('active');
 				break;
+			case 'timer-to-reload':
+				this.modal_a.classList.add('d-none');
+				this.modal_t.classList.remove('d-none');
+				this.modal_b.classList.remove('d-none');
+				this.modal_bd.classList.add('d-none');
+				let template = `<p>${data.text}. ${text.text.timer_to_reload.if_press_button}</p>
+												<p>
+													<span>${text.text.timer_to_reload.reload_after}</span>
+													<span id="modal-timer-value">${data.timer}</span>
+													<span>${text.text.timer_to_reload.unit_of_time}</span>
+												</p>`;
+				this.modal_t.innerHTML = template;
+				this.modal_bc.innerHTML = text.button_reload;
+				this.modal_bc.addEventListener('click', ev => {
+					reloadPage();
+				});
+				let timer = data.timer;
+				let intervalID = setInterval(() => {
+					--timer;
+					setTimerValue(timer);
+				}, 1000);
+				this.modal.classList.add('active');
+				break;
 			case 'custom-message':
 				this.modal_a.classList.add('d-none');
 				this.modal_t.classList.remove('d-none');
@@ -122,5 +155,13 @@ export default function(switcher, type, data) {
 		}
 	} else {
 		this.modal.classList.remove('active');
+	}
+
+	function setTimerValue(timer) {
+		let target = document.getElementById('modal-timer-value');
+		target.innerHTML = timer;
+		if (timer <= 0) {
+			reloadPage();
+		}
 	}
 }
