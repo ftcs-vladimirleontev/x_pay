@@ -23,7 +23,8 @@ export default {
 			data_sended: null,
 			conting_type: null,
 			conting_rate: null,
-			wallet: null
+			wallet: null,
+			version: null,
 		};
 		sessionStorage.setItem('xpay', JSON.stringify(defaultObj));
 
@@ -65,6 +66,8 @@ export default {
 				return state.conting_rate;
 			case 'xpay_wallet':
 				return state.wallet;
+			case 'xpay_version':
+				return state.version;
 		}
 	},
 
@@ -110,6 +113,9 @@ export default {
 				break;
 			case 'xpay_wallet':
 				state.wallet = value;
+				break;
+			case 'xpay_version':
+				state.version = value;
 				break;
 		}
 		sessionStorage.setItem('xpay', JSON.stringify(state));
@@ -158,6 +164,9 @@ export default {
 				break;
 			case 'xpay_wallet':
 				state.wallet = null;
+				break;
+			case 'xpay_version':
+				state.version = null;
 				break;
 		}
 		sessionStorage.setItem('xpay', JSON.stringify(state));

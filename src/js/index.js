@@ -1,3 +1,4 @@
+const VERSION = '0.1.0';
 /* #################### GLOBALLY LIBRARIES #################### */
 import '../../node_modules/core-js/features/promise';
 
@@ -8,7 +9,7 @@ import stateLocalLib from './js_modules/library-state-local.js';
 import stateGlobalLib from './js_modules/library-state-global.js';
 import stateDBLib from './js_modules/library-state-db.js';
 /* library for events */
-import customEvents from './js_modules/library-cust-ev.js';
+import custEvLib from './js_modules/library-cust-ev.js';
 import callback from './js_modules/library-cust-ev-callbacks.js';
 /* network library */
 import requests from './js_modules/library-requests.js';
@@ -25,6 +26,7 @@ import setExButtons from './js_modules/set-exchanger-buttons.js';
 
 /* #################### CONSTANTS AND VARIABLES #################### */
 let TARGETS, changeModal;
+let customEvents = custEvLib;
 
 /* #################### LOGIC #################### */
 window.onload = function() {
@@ -122,8 +124,17 @@ function startLogic(values) {
 	setCountryLists.call(TARGETS, dataForCountries);
 
 	/* synchronize state */
+	let time = stateLib.getTime();
 	if (!stateLib.itsHere.call(stateGlobalLib)) {
 		stateLib.init.call(stateLib, stateGlobalLib);
+		stateLib.setStateValue.call(stateGlobalLib, 'xpay_version', VERSION, time);
+	} else {
+		let vers = stateLib.getStateValue.call(stateGlobalLib, 'xpay_version');
+		if (!vers || vers != VERSION) {
+			stateLib.deleteStateObj.call(stateGlobalLib);
+			stateLib.init.call(stateLib, stateGlobalLib);
+			stateLib.setStateValue.call(stateGlobalLib, 'xpay_version', VERSION, time);
+		}
 	}
 	stateLib.init.call(stateLib, stateLocalLib);
 	stateLib.synchLocal.call(stateLib, stateGlobalLib, stateLocalLib);

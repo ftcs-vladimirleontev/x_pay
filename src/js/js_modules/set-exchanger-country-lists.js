@@ -6,4 +6,6 @@ export default function(data) {
 	for (let i = 0; i < targets.length; i++) {
 		createSelect('country', targets[i], data, 'EE');
 	}
+	// this.benifC_bi.value = this.benifC_bi.dataset.default;
+	// this.bankC_bi.value = this.bankC_bi.dataset.default;
 };

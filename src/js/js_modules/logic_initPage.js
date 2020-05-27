@@ -34,7 +34,6 @@ export default function(customEvents) {
 		this.tmds.innerHTML = customEvents.form1_text.tmd.buy.second;
 		this.tmd_ywg.innerHTML = customEvents.form1_text.tmd.buy.ywg;;
 	}
-
 	let fiatID = stateLib.getStateValue.call(stateLocalLib, 'xpay_fiat');
 	this.ywg_c.innerHTML = customEvents.variables.currencies.fiat[fiatID].displayCode;
 	this.ywg_q.innerHTML = (fiatQ) ? fiatQ : '0';
@@ -55,6 +54,7 @@ export default function(customEvents) {
 		}
 	}
 
+	
 	/* set data of step2 and step3 */
 	if (tab == 'sell') {
 		setData.setDataFromDB.call(setData, 'sell', this, customEvents);

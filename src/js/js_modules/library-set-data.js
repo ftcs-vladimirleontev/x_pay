@@ -68,21 +68,27 @@ export default {
 			// 	TARGETS.accept_si.checked = false;
 			// }
 		} else {
+			let tempValue;
 			TARGETS.mail_bi.value = this.stateLib.getStateValue.call(
 				this.stateDBLib, 'xpay_buy_mail'
 			);
 			TARGETS.phone_bi.value = this.stateLib.getStateValue.call(
 				this.stateDBLib, 'xpay_buy_phone'
 			);
-			TARGETS.benifC_bi.value = this.stateLib.getStateValue.call(
-				this.stateDBLib, 'oero_buy_benif_country'
-			) || TARGETS.benifC_bi.dataset.default;
+			tempValue = this.stateLib.getStateValue.call(
+				this.stateDBLib, 'xpay_buy_benif_country'
+			);
+			TARGETS.benifC_bi.value = (tempValue) ? tempValue : TARGETS.benifC_bi.dataset.default;
+			// console.log(TARGETS.benifC_bi.value);
+			
 			TARGETS.bankN_bi.value = this.stateLib.getStateValue.call(
 				this.stateDBLib, 'xpay_buy_bank_name'
 			);
-			TARGETS.bankC_bi.value = this.stateLib.getStateValue.call(
-				this.stateDBLib, 'oero_buy_bank_country'
-			) || TARGETS.bankC_bi.dataset.default;
+			tempValue = this.stateLib.getStateValue.call(
+				this.stateDBLib, 'xpay_buy_bank_country'
+			);
+			TARGETS.bankC_bi.value = (tempValue) ? tempValue : TARGETS.bankC_bi.dataset.default;
+			// console.log(TARGETS.bankC_bi.value);
 		}
 	},
 

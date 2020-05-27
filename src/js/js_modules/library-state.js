@@ -42,7 +42,7 @@ export default {
 	},
 
 	deleteStateObj: function () {
-		this.deleteState(this.all_keys, this.deleteValue);
+		this.deleteState(this.all_keys, this.deleteValue, this.setValue);
 	},
 
 	getTime: function () {

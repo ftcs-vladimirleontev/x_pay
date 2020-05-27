@@ -12,12 +12,5 @@ export default [
 	{key: 'xpay_conting_type', value: null},
 	{key: 'xpay_conting_rate', value: null},
 	{key: 'xpay_wallet', value: null},
-	// {key: 'xpay_sell_b', value: false}, 
-	// {key: 'xpay_sell_ic', value: null}, 
-	// {key: 'xpay_sell_iq', value: null}, 
-	// {key: 'xpay_sell_oc', value: null}, 
-	// {key: 'xpay_buy_b', value: false}, 
-	// {key: 'xpay_buy_ic', value: null}, 
-	// {key: 'xpay_buy_iq', value: null}, 
-	// {key: 'xpay_buy_oc', value: null}, 
+	{key: 'xpay_version', value: null},
 ];

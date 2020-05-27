@@ -64,32 +64,11 @@ export default {
 		for (let key of all_keys) {
 			remover(key);
 		}
-		// switch (type) {
-		// 	case 'all':
-		// 		setter('xpay_tab', correcter('left'));
-		// 		setter('xpay_slide', correcter(1));
-		// 		setter('xpay_buy_b', correcter(false));
-		// 		setter('xpay_buy_ic', correcter(null));
-		// 		setter('xpay_buy_iq', correcter(null));
-		// 		setter('xpay_buy_oc', correcter(null));
-		// 	case 'sell':
-		// 		setter('xpay_sell_b', correcter(false));
-		// 		setter('xpay_sell_ic', correcter(null));
-		// 		setter('xpay_sell_iq', correcter(null));
-		// 		setter('xpay_sell_oc', correcter(null));
-		// 		break;
-		// 	case 'buy':
-		// 		setter('xpay_buy_b', correcter(false));
-		// 		setter('xpay_buy_ic', correcter(null));
-		// 		setter('xpay_buy_iq', correcter(null));
-		// 		setter('xpay_buy_oc', correcter(null));
-		// 		break;
-		// }
 	},
 
-	deleteState: function (all_keys, remover) {
+	deleteState: function (all_keys, remover, setter) {
 		for (let key of all_keys) {
-			remover(key);
+			remover(key, setter);
 		}
 	},
 
