@@ -1,5 +1,8 @@
 // import getETHWallet from './logic_getETHWallet.js';
 import processingNot200 from './logic_processingNot200.js';
+import processingServerErrors from './logic_processingServerErrors.js';
+import processingResponseBodyErrors from './logic_processingResponseBodyErrors.js';
+
 // this = customEvents
 export default {
 	'tab-is-clicked': function (ev) {
@@ -389,23 +392,34 @@ export default {
 				let cryptoValue = state.getStateValue.call(local, 'xpay_crypto');
 				let request = (cryptoValue == '3') ?
 					sendETHData.call(closureThis, closureEv) : sendSellData.call(closureThis, closureEv);
+
+				let dataToCallback = {
+					resolve: ifResponseOk.bind(ev.detail.targets), 
+					reject: processingServerErrors.bind(ev.detail.targets),
+					toResolve: {type: 'exchanger',},
+					toReject: {type: 'exchanger',},
+				};
+				requests.processingFetch(request, requests.processingResponse, dataToCallback);
+
+
 				
-				requests.processingFetch(request, responseObj => {
-					if (!requests.responseIsNotOK(responseObj)) {
-						if (requests.bodyIsOK(responseObj)) {
-							let toState = (cryptoValue == '3') ? 
-								getETHResponseBody(responseObj) : getResponseBody(responseObj);
-							processingOK(toState);
-							closureThis.startEvent.call(
-								closureThis, 'transaction-is-started', dataForEv
-							);
-						} else {
-							processingErors(responseObj)
-						}
-					} else {
-						processingNot200(responseObj, closureThis, dataForEv, changeModal);
-					}
-				});
+				// requests.processingFetch(request, responseObj => {
+				// 	console.log(responseObj);
+				// 	if (!requests.responseIsNotOK(responseObj)) {
+				// 		if (requests.bodyIsOK(responseObj)) {
+				// 			let toState = (cryptoValue == '3') ? 
+				// 				getETHResponseBody(responseObj) : getResponseBody(responseObj);
+				// 			processingOK(toState);
+				// 			closureThis.startEvent.call(
+				// 				closureThis, 'transaction-is-started', dataForEv
+				// 			);
+				// 		} else {
+				// 			processingErors(responseObj)
+				// 		}
+				// 	} else {
+				// 		processingNot200(responseObj, closureThis, dataForEv, changeModal);
+				// 	}
+				// });
 			} else {
 				closureThis.startEvent.call(closureThis, 'transaction-is-started', dataForEv);
 			}
@@ -464,6 +478,16 @@ export default {
 			}
 		}
 
+		function ifResponseOk(responseObj, data) {
+			if (requests.bodyIsOK(responseObj)) {
+				let toState = (cryptoValue == '3') ? getETHResponseBody(responseObj) : getResponseBody(responseObj);
+				processingOK(toState);
+				closureThis.startEvent.call(closureThis, 'transaction-is-started', dataForEv);
+			} else {
+				processingResponseBodyErrors.call(this, responseObj, data);
+			}
+		}
+
 		function getETHResponseBody(responseObj) {
 			return {
 				id: responseObj.body.result.transaction_token, 
@@ -473,26 +497,6 @@ export default {
 
 		function getResponseBody(responseObj) {
 			return {id: responseObj.body.transaction_id, wallet: responseObj.body.payment_details}
-		}
-
-		function processingErors(responseObj) {
-			let text = '';
-			if 	(	responseObj.body.errors.hasOwnProperty('email') && 
-						responseObj.body.errors.hasOwnProperty('iban')
-					)
-			{
-				text = closureThis.responseErrors.both;
-				closureEv.detail.targets.mail_si.parentElement.classList.add('error');
-				closureEv.detail.targets.iban_si.parentElement.classList.add('error');
-			} else if (responseObj.body.errors.hasOwnProperty('email')) {
-				text = closureThis.responseErrors.email;
-				closureEv.detail.targets.mail_si.parentElement.classList.add('error');
-			} else {
-				text = closureThis.responseErrors.iban;
-				closureEv.detail.targets.iban_si.parentElement.classList.add('error');
-			}
-			changeModal(true, 'custom-message', text);
-			closureThis.checkRate.start();
 		}
 
 		function processingOK(toState) {
@@ -515,21 +519,22 @@ export default {
 		ev.detail.stateLib.deleteStateValue.call(
 			ev.detail.stateLocalLib, 'xpay_conting_type', ev.detail.time
 		);
+
 		
+		let dataForEv = {
+			targets: ev.detail.targets, variables: ev.detail.variables, 
+			type: ev.detail.type, time: ev.detail.time,
+		};
 		//если sell запустить счетчик
-		if (ev.detail.type == 'sell') {
-			let dataForEv = {
-				targets: ev.detail.targets, variables: ev.detail.variables, 
-				type: ev.detail.type, time: ev.detail.time,
-			};
-			dataForEv.lib = this;
-			this.startEvent.call(this, 'start-timer', dataForEv);
-		}
+		// if (ev.detail.type == 'sell') {
+		// 	dataForEv.lib = this;
+		// 	this.startEvent.call(this, 'start-timer', dataForEv);
+		// }
 
 		// установить текст кнопки
-		ev.detail.targets.ex_bn.innerText = (ev.detail.type == 'sell') ? 
-			this.buttonText.paid : this.buttonText.send;
-
+		// ev.detail.targets.ex_bn.innerText = (ev.detail.type == 'sell') ? 
+		// 	this.buttonText.paid : this.buttonText.send;
+		ev.detail.targets.ex_bn.innerText = this.buttonText.send;
 		// записать в DB данные 2-го шага
 		ev.detail.setData.setDataInDB.call(
 			ev.detail.setData, ev.detail.type, ev.detail.targets
@@ -540,22 +545,40 @@ export default {
 			ev.detail.setData, ev.detail.type, ev.detail.targets, this
 		);
 
-		// перейти на 3-й шаг
-		ev.detail.setSlide(3, ev.detail.targets);
+		// установить флаг проведенной транзакции для синхронизации личного кабинета
+		ev.detail.stateLib.setStateValue.call(
+			ev.detail.stateLocalLib, 'xpay_transaction_completed', true, ev.detail.time
+		);
+		ev.detail.stateLib.setStateValue.call(
+			ev.detail.stateGlobalLib, 'xpay_transaction_completed', true, ev.detail.time
+		);
 
 		// synch
 		ev.detail.stateLib.synch.call(
 			ev.detail.stateLib, ev.detail.stateGlobalLib, ev.detail.stateLocalLib
 		);
 
+		// перейти на 3-й шаг
+		// ev.detail.setSlide(3, ev.detail.targets);
+
 		// отключить модалку
-		changeModal();
+		// changeModal();
+		
+
+
+
+		if (ev.detail.type == 'buy') {
+			this.startEvent.call(this, 'finish-transaction', dataForEv);
+		} else {
+			changeModal(true, 'all-end');
+			this.startEvent.call(this, 'end-timer', dataForEv);
+		}
 	},
 
 	'finish-transaction': function (ev) {
 		this.eventDebag('finish-transaction');
 		const changeModal = ev.detail.modal.bind(ev.detail.targets);
-		changeModal(true, 'wait');
+		// changeModal(true, 'wait');
 		if (this.timer) {
 			this.timer.stop();
 		}
@@ -605,7 +628,7 @@ export default {
 			let request = requests.sendPOSTRequest(requests.server, '/crypto/buy', toSend);
 			requests.processingFetch(request, responseObj => {
 				if (!requests.responseIsNotOK(responseObj)) {
-					changeModal(true, 'buy-end');
+					changeModal(true, 'all-end');
 					closureThis.startEvent.call(closureThis, 'clean-transaction', dataForEv);
 				} else {
 					processingNot200(responseObj, closureThis, dataForEv, changeModal);

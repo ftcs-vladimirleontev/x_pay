@@ -1,0 +1,106 @@
+@media (max-width: 1260px) {
+	.account{
+		margin-top: 20px;
+	}
+	.account__wraper{
+		padding-left: 30px;
+		padding-right: 30px;
+	}
+}
+
+@media (max-width: 768px) {
+	.account__personal-descrip{
+		font-size: 22px;
+	}
+	.account__transactions-header{
+		font-size: 32px;
+	}
+	.table__item{
+		font-size: 17px;
+	}
+	.account-button{
+		width: 100px;
+		height: 35px;
+		font-size: 12px;
+	}
+	.transaction__details-header{
+		font-size: 17px;
+	}
+	.transaction__details>p{
+		font-size: 17px;
+	}
+}
+
+@media (max-width: 640px) {
+	.account__personal-descrip{
+		font-size: 20px;
+	}
+	.account__transactions-header{
+		font-size: 28px;
+	}
+	.table__item{
+		padding: 5px;
+		font-size: 15px;
+		flex-wrap: wrap;
+	}
+	.account-button{
+		width: 80px;
+		height: 35px;
+		font-size: 12px;
+		line-height: 0.98em;
+	}
+	.transaction__details-header{
+		font-size: 15px;
+	}
+	.transaction__details>p{
+		font-size: 15px;
+	}
+}
+@media (max-width: 480px) {
+	.account__personal-descrip{
+		font-size: 16px;
+	}
+	.account__transactions-header{
+		margin-bottom: 0;
+		font-size: 22px;
+	}
+	.table__item{
+		padding: 5px;
+		font-size: 12px;
+	}
+	.account-button{
+		width: 60px;
+		height: 28px;
+		font-size: 10px;
+	}
+	.transaction__details-header{
+		font-size: 13px;
+	}
+	.transaction__details>p{
+		font-size: 13px;
+	}
+}
+
+@media (max-width: 380px) {
+	.account__personal-descrip{
+		font-size: 15px;
+	}
+	.account__transactions-header{
+		margin-bottom: 0;
+		font-size: 18px;
+	}
+	.table__item{
+		font-size: 11px;
+	}
+	.account-button{
+		width: 50px;
+		height: 28px;
+		font-size: 8px;
+	}
+	.transaction__details-header{
+		font-size: 12px;
+	}
+	.transaction__details>p{
+		font-size: 12px;
+	}
+}
