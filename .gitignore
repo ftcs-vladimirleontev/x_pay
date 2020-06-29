@@ -1,6 +1,8 @@
 distr
 node_modules
-shlak
 old_version
 Tema
 temp
+shlak
+.babelrc_old(0)
+package_old(0).json
