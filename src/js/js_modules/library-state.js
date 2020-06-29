@@ -24,7 +24,7 @@ export default {
 	},
 
 	deleteStateValue: function (key, time) {
-		this.deleteValue(key, this.setValue, this.defaultValuesArray);
+		this.deleteValue(key, this.setValue);
 		this.setValue('xpay_last_change', this.correctDataIn(time));
 	},
 
@@ -42,7 +42,7 @@ export default {
 	},
 
 	deleteStateObj: function () {
-		this.deleteState(this.all_keys, this.deleteValue, this.setValue, this.defaultValuesArray);
+		this.deleteState(this.all_keys, this.deleteValue, this.setValue);
 	},
 
 	getTime: function () {
@@ -73,7 +73,7 @@ export default {
 	synchLocal: function(globLib, locLib) {
 		let global = this.getAllState.call(globLib);
 		for (const key in global) {
-			this.setStateValue.call(locLib, key, locLib.correctDataIn(global[key]), global['xpay_last_change']);
+			this.setStateValue.call(locLib, key, global[key], global['xpay_last_change']);
 		}
 	},
 
@@ -90,12 +90,9 @@ export default {
 
 		// }
 
-		// console.log(this.getAllState.call(globLib));
-		// console.log(this.getAllState.call(locLib));
-
 		function synchTarget(lib, context, source) {
 			for (const key in source) {
-				lib.setStateValue.call(context, key, context.correctDataIn(source[key]), source['xpay_last_change']);
+				lib.setStateValue.call(context, key, source[key], source['xpay_last_change']);
 			}
 		}
 	},

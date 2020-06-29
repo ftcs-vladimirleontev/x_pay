@@ -19,24 +19,15 @@ export default {
 			let output = [];
 			output.push(["Content-Type", "application/json;charset=utf-8"]);
 			/* добавление токена */
-			if (token) {
-				output.push(["Authorization", "Bearer " + token]);
-			}
+			// if (token) {
+				
+			// }
 			return output;
 		}
 	},
 
 	sendGETRequest: function (server, route) {
 		return fetch(server + route);
-	},
-
-	sendGETRequestWithToken: function (server, route, token) {
-		return fetch(server + route, {
-			method: "GET",
-			headers: {
-				"Authorization": "Bearer " + token,
-			},
-		});
 	},
 
 	processingFetch: function (promise, callback, data) {
@@ -59,15 +50,6 @@ export default {
 				return Promise.all(values);
 			})
 			.then(values => callback(values, data));
-	},
-
-	processingResponse: function(responseObj, data) {
-		// console.log(responseObj);
-		if (responseObj.ok) {
-			data.resolve(responseObj, data.toResolve);
-		} else {
-			data.reject(responseObj, data.toReject);
-		}
 	},
 
 	bodyIsOK: function (responseObj) {

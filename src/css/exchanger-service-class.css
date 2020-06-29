@@ -1,80 +1,3 @@
-
-.exchange-form__first-form.active, .exchange-form__second-form.active, .exchange-form__third-form.active {
-	display: -webkit-box;
-	display: flex;
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: normal;
-	flex-flow: column nowrap;
-	-webkit-box-pack: start;
-	justify-content: flex-start;
-	-webkit-box-align: start;
-	align-items: flex-start;
-	font-family: Work Sans;
-	position: relative;
-}
-
-.currency-quantity {
-	display: -webkit-box;
-	display: flex;
-	-webkit-box-align: center;
-	align-items: center;
-}
-
-.currency-quantity__input {
-	padding: 11px 22px;
-	border-radius: 3px;
-	border: 1px solid #4A44F2;
-	width: 185px;
-	color: #4A44F2;
-	font-size: 16px;
-	line-height: 20px;
-}
-
-.currency-quantity__input::-webkit-inner-spin-button {
-	display: none;
-}
-
-.currency-quantity__text {
-	display: inline-block;
-	margin-left: 10px;
-	font-size: 16px;
-	line-height: 20px;
-	letter-spacing: 0.05em;
-	color: #FBFBFB;
-	width: 110px;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	overflow: hidden;
-}
-
-.exchange-form-block-text {
-	padding-bottom: 20px;
-	display: -webkit-box;
-	display: flex;
-	-webkit-box-pack: justify;
-	justify-content: space-between;
-	-webkit-box-align: start;
-	align-items: flex-start;
-	width: 305px;
-	font-style: normal;
-	font-size: 16px;
-	line-height: 20px;
-}
-
-.exchange-form-block-text__item {
-	font-weight: normal;
-	color: #FBFBFB;
-	opacity: 0.5;
-	margin-right: 20px;
-}
-
-.currency-form__text {
-	color: #0E0A19;
-	margin-left: 20px;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	overflow: hidden;
-}
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -92,4 +15,19 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+
+.d-none {
+	display: none;
+}
+
+.d-block {
+	display: block;
+}
+
+.not-changet {
+	background-color: #d1e3ff;
+	/* color: #ffffff; */
+	pointer-events: none;
 }

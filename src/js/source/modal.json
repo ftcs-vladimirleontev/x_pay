@@ -3,7 +3,6 @@
 	"button_cancel": "calcel",
 	"button_d": "delete application",
 	"button_reload": "reload the page",
-	"button_to_home": "to home page",
 
 	"text": {
 		"confirm": "If you delete an application, all information will be lost",
@@ -22,12 +21,6 @@
 			"if_press_button": "If you click the \"reload the page\" button, the page will be reloaded.",
 			"reload_after": "The page will reload automatically in ",
 			"unit_of_time": "seconds"
-		},
-		"deferred_redirect": {
-			"if_press_button": "If you click the \"to home page\" button, then you will go to the main page, where you can log in to your personal account by clicking \"Login\".",
-			"redirect_after": "The page will be redirected automatically in ",
-			"unit_of_time": "seconds"
-		},
-		"all_end": "Your application is accepted.<br>We have sent you an email box the letter with further instructions"
+		}
 	}
 }

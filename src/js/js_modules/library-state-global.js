@@ -48,13 +48,8 @@ export default {
 		document.cookie = updatedCookie;
 	},
 
-	deleteValue: function (name, setter, defaultArray) {
-		let value;
-		for (let i = 0; i < defaultArray.length; i++) {
-			if (defaultArray[i].key == name) {value = defaultArray[i].value}
-			break;
-		}
-		setter(name, value);
+	deleteValue: function (name, setter) {
+		setter(name, "")
 	},
 
 	getAll: function(all_keys, getter, correcter) {
@@ -71,9 +66,9 @@ export default {
 		}
 	},
 
-	deleteState: function (all_keys, remover, setter, defaultArray) {
+	deleteState: function (all_keys, remover, setter) {
 		for (let key of all_keys) {
-			remover(key, setter, defaultArray);
+			remover(key, setter);
 		}
 	},
 
@@ -81,7 +76,6 @@ export default {
 		return 	(value === null) ? 'null' : 
 						(value === false) ? 'false' :
 						(value === true) ? 'true' : 
-						(value === '') ? 'null' : 
 						(typeof value == 'number') ? '' + value : value;
 	},
 

@@ -1,45 +1,36 @@
-import setVersion from './js_modules/set-version.js';
-setVersion();
+const VERSION = '0.1.0';
 /* #################### GLOBALLY LIBRARIES #################### */
 import '../../node_modules/core-js/features/promise';
-// import _t from '../../node_modules/lodash.template';
 
 /* #################### CUSTOM LIBRARIES #################### */
-
+/* library for state */
+import stateLib from './js_modules/library-state.js';
+import stateLocalLib from './js_modules/library-state-local.js';
+import stateGlobalLib from './js_modules/library-state-global.js';
+import stateDBLib from './js_modules/library-state-db.js';
 /* library for events */
 import custEvLib from './js_modules/library-cust-ev.js';
+import callback from './js_modules/library-cust-ev-callbacks.js';
 /* network library */
 import requests from './js_modules/library-requests.js';
 /* methods */
+import initPage from './js_modules/logic_initPage.js';
 import modal from './js_modules/logic_modal.js';
-import setState from './js_modules/set-state.js';
-import setModalBlock from './js_modules/set-modal-block.js';
-import setExchangerBlock from './js_modules/set-exchanger-block.js';
-import setAuthenticationBlock from './js_modules/set-authentication-block.js';
-import setAccountBlock from './js_modules/set-account-block.js';
-import setCheckBlock from './js_modules/set-check-block.js';
-import setVerificationBlock from './js_modules/set-verivication-block.js';
-// import setSlide from './js_modules/logic_setSlide.js';
+import setCurrencies from './js_modules/set-exchanger-currencies.js';
+import setCountryLists from './js_modules/set-exchanger-country-lists.js';
+import setExTabs from './js_modules/set-exchanger-tabs.js';
+import setExDrops from './js_modules/set-exchanger-dropdowns.js';
+import setExQInp from './js_modules/set-exchanger-quan-inputs.js';
+import setExForm2 from './js_modules/set-exchanger-form2.js';
+import setExButtons from './js_modules/set-exchanger-buttons.js';
 
 /* #################### CONSTANTS AND VARIABLES #################### */
-let TARGETS, changeModal, customEvents = custEvLib;
+let TARGETS, changeModal;
+let customEvents = custEvLib;
 
 /* #################### LOGIC #################### */
 window.onload = function() {
 	TARGETS = {
-		login_button: document.getElementById('login-button'),
-		login_modal: document.getElementById('login-modal'),
-		login_tabsArr: document.querySelectorAll('.authentication__tab'),
-		login_sec_login: document.getElementById('login-section'),
-		login_sec_create: document.getElementById('create-section'),
-		login_ac_name_log: document.getElementById('account-name-login'),
-		login_pass_log: document.getElementById('pass-login'),
-		login_ac_name_cre: document.getElementById('account-name-create'),
-		login_pass_cre: document.getElementById('pass-create'),
-		login_conf_pass_cre: document.getElementById('confirm-pass-create'),
-		login_do_button: document.getElementById('authentication-start-button'),
-		login_close_button: document.getElementById('authentication-close-button'),
-		exchanger: document.querySelector('.exchanger'),
 		tabs: document.querySelectorAll('.exchanger__tab'),
 		crypto: document.getElementById('crypto'),
 		cryptoQ: document.getElementById('crypto-q'),
@@ -92,44 +83,10 @@ window.onload = function() {
 	};
 	changeModal = modal.bind(TARGETS);
 
-	/* synchronize state */
-	setState(window.xpayVer());
-
-	/* set blocks */
-	if (TARGETS.login_button && TARGETS.login_modal) {
-		setAuthenticationBlock.call(TARGETS);
-	}
-
-	if (TARGETS.modal) {
-		setModalBlock.call(TARGETS, customEvents);
-	}
-
-	if (TARGETS.exchanger) {
-		requests.processMultipleGETRequests([
-			requests.sendGETRequest(requests.server, '/service/currencies'), 
-			requests.sendGETRequest(requests.server, '/service/countries'),
-		], processingResponses);
-	}
-
-	if(document.querySelector('.account')){
-		setAccountBlock.call(TARGETS);
-	}
-
-	if(document.querySelector('.check')){
-		setCheckBlock.call(TARGETS);
-	}
-
-	if(document.querySelector('.verification')){
-		setVerificationBlock.call(TARGETS);
-	}
-
-
-	let pagesWithoutLogic = new Set(['faq.html', 'legal.html']);
-	let urlComponents = location.href.split('/');
-	let page = urlComponents[urlComponents.length - 1].split('?')[0];
-	if (pagesWithoutLogic.has(page)) {
-		changeModal(false);
-	}
+	requests.processMultipleGETRequests([
+		requests.sendGETRequest(requests.server, '/service/currencies'), 
+		requests.sendGETRequest(requests.server, '/service/countries'),
+	], processingResponses);
 };
 
 
@@ -145,7 +102,7 @@ function processingResponses(values) {
 	if (!error) {
 		if ((values[0] && values[1]) && (typeof values[0] == 'object' && typeof values[1] == 'object'))
 		{
-			setExchangerBlock(values, TARGETS, customEvents, changeModal, window.xpayVer());
+			startLogic(values);
 		} else {
 			let text = 'Sorry, but it is not possible to get correct data ' 
 				+ 'from the server for the web page to work. Try loading the page later';
@@ -154,4 +111,70 @@ function processingResponses(values) {
 	} else {
 		changeModal(true, 'timer-to-reload', {text: 'Sorry, but ' + error, timer: 10});
 	}
+}
+
+function startLogic(values) {
+	let dataForCurrencies = values[0];
+	let dataForCountries = values[1];
+
+	/* set currencies */
+	setCurrencies.call(TARGETS, dataForCurrencies, customEvents);
+
+	/* set country lists */
+	setCountryLists.call(TARGETS, dataForCountries);
+
+	/* synchronize state */
+	let time = stateLib.getTime();
+	if (!stateLib.itsHere.call(stateGlobalLib)) {
+		stateLib.init.call(stateLib, stateGlobalLib);
+		stateLib.setStateValue.call(stateGlobalLib, 'xpay_version', VERSION, time);
+	} else {
+		let vers = stateLib.getStateValue.call(stateGlobalLib, 'xpay_version');
+		if (!vers || vers != VERSION) {
+			stateLib.deleteStateObj.call(stateGlobalLib);
+			stateLib.init.call(stateLib, stateGlobalLib);
+			stateLib.setStateValue.call(stateGlobalLib, 'xpay_version', VERSION, time);
+		}
+	}
+	stateLib.init.call(stateLib, stateLocalLib);
+	stateLib.synchLocal.call(stateLib, stateGlobalLib, stateLocalLib);
+	stateLib.init.call(stateLib, stateDBLib);
+
+	/* set element listeners */
+	/* tabs */
+	setExTabs.call(TARGETS, customEvents);
+	/* dropdowns */
+	setExDrops.call(TARGETS, customEvents);
+	/* quantity inputs */
+	setExQInp.call(TARGETS, customEvents);
+	/* form2 */
+	setExForm2.call(TARGETS);
+	/* exchanger buttons */
+	setExButtons.call(TARGETS, customEvents);
+
+	/* set listeners for custom events */
+	for (const name of customEvents.events) {
+		document.addEventListener(name, ev => {
+			callback[name].call(customEvents, ev);
+		});
+	}
+
+	/* init page */
+	initPage.call(TARGETS, customEvents);
+
+	/* set synchronization with the global state */
+	window.addEventListener('blur', ev => {
+		if(customEvents.checkRate) {
+			customEvents.checkRate.stop();
+		}
+	});
+	window.addEventListener('focus', ev => {
+		stateLib.synchLocal.call(stateLib, stateGlobalLib, stateLocalLib);
+		setTimeout(() => {
+			initPage.call(TARGETS, customEvents);
+		}, 100);
+	});
+
+	/* open page */
+	changeModal(false);
 }

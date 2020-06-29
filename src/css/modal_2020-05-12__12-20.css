@@ -267,7 +267,6 @@ $spinner-right-spin: $spinner-fill-unfill-rotate-timing / $spinner-line-count; /
     font-size: 16px;
     line-height: 19px;
     text-align: center;
-    text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 /* Прозрачная кнопка  */
@@ -279,7 +278,6 @@ $spinner-right-spin: $spinner-fill-unfill-rotate-timing / $spinner-line-count; /
     color: #4A44F2;
     margin-right: 40px;
     border: 1px solid #4A44F2;
-    text-transform: uppercase;
     box-sizing: border-box;
     cursor: pointer;
     border-radius: 3px;
@@ -298,7 +296,6 @@ $spinner-right-spin: $spinner-fill-unfill-rotate-timing / $spinner-line-count; /
     outline: none;
     color: #FFFFFF;
     background: #F20505;
-    text-transform: uppercase;
     border-radius: 3px;
     cursor: pointer;
     transition-duration: 0.5s;
@@ -318,7 +315,6 @@ $spinner-right-spin: $spinner-fill-unfill-rotate-timing / $spinner-line-count; /
     cursor: pointer;
     margin-right: 20px;
     background: #4A44F2;
-    text-transform: uppercase;
     border-radius: 3px;
     transition-duration: 1s;
 }
