@@ -8,17 +8,28 @@ const inputDir = 'src',
 /* **************************************************************************** */
 /*																																							*/
 /* 		!!!!!_____для разработки держи этот параметр со значением true_____!!!!!	*/
-let isDev = false;
+let isDev = true;
 /*																																							*/
 /*							!!!!!_____ для добавления новых css _____!!!!!									*/
 const cssFiles = [
 	`${inputDir}/css/styles.css`,
+	`${inputDir}/css/nav.css`,
+	`${inputDir}/css/authentication-block.css`,
 	`${inputDir}/css/header.css`,
+	`${inputDir}/css/main.css`,
+	`${inputDir}/css/check.css`,
+	`${inputDir}/css/account.css`,
+	`${inputDir}/css/legal.css`,
+	`${inputDir}/css/faq.css`,
+	`${inputDir}/css/footer.css`,
+	`${inputDir}/css/buttons.css`,
+	`${inputDir}/css/accordion.css`,
 	`${inputDir}/css/exchanger.css`,
-	`${inputDir}/css/modal.css`,
-	`${inputDir}/css/media.css`,
-	`${inputDir}/css/exchanger-media.css`,
 	`${inputDir}/css/exchanger-service-class.css`,
+	`${inputDir}/css/modal.css`,
+	`${inputDir}/css/authentication-block-media.css`,
+	`${inputDir}/css/account-media.css`,
+	`${inputDir}/css/check-media.css`,
 ];
 /* *************** 				А ВСЕ ЧТО НИЖЕ ИЗМЕНЯТЬ НЕЛЬЗЯ			  *************** */
 /* **************************************************************************** */
@@ -77,10 +88,15 @@ let webpackConfig = {
 /* html */
 /****************************************************/
 // покурить тему замены только измененных файлов
-gulp.task('clear:html', function() {
-	return del(`${outputDir}/index.html`)
+gulp.task('clear:html:base', function() {
+	return del(`${outputDir}/*.html`)
 });
-gulp.task('create:html', function() {
+gulp.task('clear:html:verification', function() {
+	return del(`${outputDir}/verification`)
+});
+gulp.task('clear:html', gulp.parallel('clear:html:base', 'clear:html:verification'));
+
+gulp.task('create:html:base', function() {
 	return gulp
 		.src(`${inputDir}/*.html`)
     .pipe(fileinclude({
@@ -89,6 +105,17 @@ gulp.task('create:html', function() {
     }))
     .pipe(gulp.dest(`${outputDir}/`))
 });
+gulp.task('create:html:verification', function() {
+	return gulp
+		.src(`${inputDir}/verification/*.html`)
+    .pipe(fileinclude({
+        prefix: "@@",
+        basepath: `${inputDir}/html_modules/`
+    }))
+    .pipe(gulp.dest(`${outputDir}/verification/`))
+});
+gulp.task('create:html', gulp.parallel('create:html:base', 'create:html:verification'));
+
 gulp.task('build:html', gulp.series('clear:html', 'create:html'));
 /****************************************************/
 /* css */

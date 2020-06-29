@@ -11,6 +11,7 @@ export default {
 
 	createDefault: function (time, setter, correcter, valueArray) {
 		let defaultObj = {
+			user: null,
 			tab: null,
 			slide: null,
 			crypto: null,
@@ -25,6 +26,7 @@ export default {
 			conting_rate: null,
 			wallet: null,
 			version: null,
+			transaction_completed: false,
 		};
 		sessionStorage.setItem('xpay', JSON.stringify(defaultObj));
 
@@ -40,6 +42,10 @@ export default {
 	getValue: function (name) {
 		let state = JSON.parse(sessionStorage.getItem('xpay'));
 		switch (name) {
+			case 'xpay_user':
+				return state.user;
+			case 'xpay_transaction_completed':
+				return state.transaction_completed;
 			case 'xpay_tab':
 				return state.tab;
 			case 'xpay_slide':
@@ -75,6 +81,12 @@ export default {
 		let state = JSON.parse(sessionStorage.getItem('xpay'));
 		if (!state) {return false;}
 		switch (name) {
+			case 'xpay_user':
+				state.user = value;
+				break;
+			case 'xpay_transaction_completed':
+				state.transaction_completed = value;
+				break;
 			case 'xpay_tab':
 				state.tab = value;
 				break;
@@ -126,6 +138,12 @@ export default {
 		let state = JSON.parse(sessionStorage.getItem('xpay'));
 		if (!state) {return false;}
 		switch (name) {
+			case 'xpay_user':
+				state.user = null;
+				break;
+			case 'xpay_transaction_completed':
+				state.transaction_completed = false;
+				break;
 			case 'xpay_tab':
 				state.tab = null;
 				break;

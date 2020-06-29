@@ -1,0 +1,38 @@
+@media (max-width: 640px) {
+	.authentication-block__wraper{
+		width: 350px;
+		padding: 30px;
+	}
+	.authentication__tab{
+		font-size: 12px;
+		text-align: center;
+	}
+	.authentication__buttons .xpay-button{
+		font-size: 12px;
+	}
+}
+
+@media (max-width: 480px) {
+	.authentication-block__wraper{
+		width: 280px;
+		padding: 20px;
+	}
+	.authentication__tab{
+		font-size: 11px;
+	}
+	.authentication__input-block{
+		font-size: 14px;
+	}
+	.authentication__input{
+		height: 32px;
+	}
+	.authentication__button{
+		/* width: auto; */
+		height: 32px;
+		/* padding: 5px; */
+	}
+	.authentication__buttons .xpay-button{
+		font-size: 11px;
+		line-height: 0.92rem;
+	}
+}

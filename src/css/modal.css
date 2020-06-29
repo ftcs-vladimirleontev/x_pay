@@ -21,8 +21,10 @@
 
 .modal__content {
     position: relative;
-    width: 620px;
-    height: 328px;
+		max-width: 620px;
+		width: 620px;
+		/* height: 328px; */
+		height: auto;
     background-color: #fff;
     padding: 50px 50px;
     box-sizing: content-box;
@@ -42,29 +44,12 @@
     font-weight: normal;
     font-size: 20px;
     line-height: 140%;
-    text-align: center;
+    text-align: justify;
     color: #000000;
     margin-top: 50px;
     margin-bottom: 50px;
     cursor: pointer;
 }
-
-/* $color-1: #9b0062 !default;
-$color-2: #ff008b !default;
-$color-3: #bcbaad !default;
-$color-4: #cc006f !default;
-
-// Timing
-$container-rotate-timing:           1600ms !default;
-$spinner-fill-unfill-rotate-timing: 4800ms !default;
-
-
-$spinner-line-count: 4;
-
-$spinner-left-spin:  $spinner-fill-unfill-rotate-timing / $spinner-line-count; // Changes these values can be interesting
-$spinner-right-spin: $spinner-fill-unfill-rotate-timing / $spinner-line-count; // Changes these values can be interesting */
-
-
 .Spinner {
     height: 28px;
     left: 50%;
@@ -258,75 +243,12 @@ $spinner-right-spin: $spinner-fill-unfill-rotate-timing / $spinner-line-count; /
     to{opacity:0}
 }
 
-
-    /* Кнопки */
-.modal__btn-block{
-    font-family: Work Sans;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 19px;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+/* Кнопки */
+.modal__btn{
+	width: 240px;
+	margin-bottom: 20px;
+	margin-right: 40px;
 }
-/* Прозрачная кнопка  */
-.modal__btn-transparent{
-    width: 240px;
-    height: 42px;
-    background: transparent;
-    outline: none;
-    color: #4A44F2;
-    margin-right: 40px;
-    border: 1px solid #4A44F2;
-    text-transform: uppercase;
-    box-sizing: border-box;
-    cursor: pointer;
-    border-radius: 3px;
-    transition-duration: 0.5s;
-}
-.modal__btn-transparent:hover{
-    background: #4A44F2;
-    color: #FFFFFF;
-    transition-duration: 0.5s;
-}
-/* Красная кнопка */
-.modal__btn-red{
-    width: 240px;
-    height: 42px;
-    border: none;
-    outline: none;
-    color: #FFFFFF;
-    background: #F20505;
-    text-transform: uppercase;
-    border-radius: 3px;
-    cursor: pointer;
-    transition-duration: 0.5s;
-}
-.modal__btn-red:hover{
-    background: #CA1818;
-    transition-duration: 0.5s;
-}
-/* Синяя кнопка  */
-.modal__btn-blue{
-    width: 240px;
-    height: 42px;
-    left: 0px;
-    top: 0px;
-    color: #ffffff;
-    border: none;
-    cursor: pointer;
-    margin-right: 20px;
-    background: #4A44F2;
-    text-transform: uppercase;
-    border-radius: 3px;
-    transition-duration: 1s;
-}
-.modal__btn-blue:hover{
-    background: transparent;
-    outline: none;
-    color: #4A44F2;
-    border: 1px solid #4A44F2;
-    border-radius: 3px;
-    transition-duration: 0.5s;
+.modal__btn:last-of-type{
+	margin-right: 0;
 }

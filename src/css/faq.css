@@ -1,0 +1,57 @@
+
+body {
+	font-family: 'Gilroy Thin';
+}
+.faq__wrapper{
+	max-width: 1200px;
+	width: 100%;
+	height: 100%;
+}
+.faq__descrip>h1 {
+	margin: 0;
+	font-family: Work Sans;
+	text-transform: uppercase;
+	font-size: 30px;
+	line-height: 140%;
+	letter-spacing: 0.05em;
+	color: #0E0A19;
+	margin-bottom: 10px;
+}
+.faq__protection-block>span {
+	display: block;
+	font-family: Work Sans;
+	font-size: 18px;
+	line-height: 138.4%;
+	letter-spacing: 0.05em;
+	color: rgba(14, 10, 25, 0.8);
+}
+.faq__descrip{
+	width: 100%;
+	padding: 50px;
+}
+.faq__content {
+	width: 100%;
+	margin: 20px;
+	margin: 0 auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}
+ .tab__content-list{
+	 margin-left: 10px;
+	padding-left: 0;
+ }
+ .tab__content-list li{
+	margin-bottom: 5px;
+ }
+ .tab__content-list li:last-of-type{
+	 margin-bottom: 25px;
+	}
+
+	.documents-list{
+		margin-left: 15px;
+	}
+
+ 
+

@@ -21,8 +21,9 @@ export default function(customEvents) {
 	}
 
 	/* set next-button text */
-	this.ex_bn.innerText = (slide == '1' || slide == '2') ? customEvents.buttonText.next : 
-		(tab == 'sell') ? customEvents.buttonText.paid : customEvents.buttonText.send;
+	this.ex_bn.innerText = 	(slide == '1') ? 
+		customEvents.buttonText.next : customEvents.buttonText.send;
+		// (tab == 'sell') ? customEvents.buttonText.paid : customEvents.buttonText.send;
 
 	/* You will get / give */
 	if (tab == 'sell') {

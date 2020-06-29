@@ -2,8 +2,8 @@
 import stateLib from './library-state.js';
 import stateLocalLib from './library-state-local.js';
 import stateGlobalLib from './library-state-global.js';
-import setSlide from './logic_setSlide.js';
 import modal from './logic_modal.js';
+import setSlide from './logic_setSlide.js';
 import getErrors from './logic_getErrors.js';
 import setErrors from './logic_setErrors.js';
 
@@ -14,8 +14,8 @@ export default function(customEvents) {
 		let time = stateLib.getTime();
 		stateLib.setStateValue.call(stateLocalLib, 'xpay_slide', 1, time);
 		stateLib.setStateValue.call(stateGlobalLib, 'xpay_slide', 1, time);
+		this.ex_bn.innerText = customEvents.buttonText.next;
 		setSlide(1, this);
-		// window.scrollTo(0, 200);
 	});
 
 	this.ex_bc.addEventListener('click', ev => {
@@ -31,6 +31,7 @@ export default function(customEvents) {
 				let time = stateLib.getTime();
 				stateLib.setStateValue.call(stateLocalLib, 'xpay_slide', 2, time);
 				stateLib.setStateValue.call(stateGlobalLib, 'xpay_slide', 2, time);
+				this.ex_bn.innerText = customEvents.buttonText.send;
 				setSlide(2, this);
 			} else {
 				if (parseFloat(this.cryptoQ.value) === 0 || parseFloat(this.fiatQ.value) === 0) {
@@ -40,7 +41,7 @@ export default function(customEvents) {
 				}
 			}
 		} else if (+slide == 2) {
-			let errors = getErrors.call(this, tab);
+			let errors = getErrors.call(this, 'exchanger', {tab: tab});
 			if (!errors) {
 				if (tab == 'sell' && !this.accept_si.checked) {
 					changeModal(true, 'accept_si');
@@ -49,23 +50,12 @@ export default function(customEvents) {
 				let dataForEv = {targets: this, variables: customEvents.variables, type: tab};
 				customEvents.startEvent.call(customEvents, 'to-server-validation', dataForEv);
 			} else {
-				setErrors.call(this, tab, errors);
+				setErrors.call(this, 'exchanger', {tab: tab, errors: errors});
 			}
 		} else {
 				let dataForEv = {targets: this, variables: customEvents.variables, type: tab};
 				customEvents.startEvent.call(customEvents, 'finish-transaction', dataForEv);
 		}
-	});
-
-	this.modal_bc.addEventListener('click', ev => {changeModal(false);});
-
-	this.modal_bd.addEventListener('click', ev => {
-		this.ex_bn.innerText = customEvents.buttonText.next;
-		let dataForEv = {targets: this, variables: customEvents.variables};
-		dataForEv.type = stateLib.getStateValue.call(stateLocalLib, 'xpay_tab');
-		let key = (dataForEv.type == 'sell') ? 'end-timer' : 'clean-transaction';
-		customEvents.startEvent.call(customEvents, key, dataForEv);
-		changeModal(true, 'deleted');
 	});
 
 	/* copy buttons */
