@@ -1,3 +1,5 @@
+"use strict";
+
 export default function(paramName) {
   let addressString = window.location.toString();  
 	let parameters = (addressString.indexOf("?") == -1) ? null : addressString.split('?')[1];
@@ -9,8 +11,8 @@ export default function(paramName) {
 				break;
 			}
 		}
-		return output.split('=')[1];
+		return (output) ? output.split('=')[1] : null;
 	} else {
-		return '';
+		return null;
 	}
 }

@@ -1,3 +1,5 @@
+"use strict";
+
 export default {
 	server: 'https://srv.bitfiat.online',
 
@@ -26,18 +28,23 @@ export default {
 		}
 	},
 
-	sendGETRequest: function (server, route) {
-		return fetch(server + route);
-	},
-
-	sendGETRequestWithToken: function (server, route, token) {
-		return fetch(server + route, {
+	sendGETRequest: function (server, route, token) {
+		return (!token) ? fetch(server + route) : fetch(server + route, {
 			method: "GET",
 			headers: {
 				"Authorization": "Bearer " + token,
 			},
 		});
 	},
+
+	// sendGETRequestWithToken: function (server, route, token) {
+	// 	return fetch(server + route, {
+	// 		method: "GET",
+	// 		headers: {
+	// 			"Authorization": "Bearer " + token,
+	// 		},
+	// 	});
+	// },
 
 	processingFetch: function (promise, callback, data) {
 		promise
@@ -62,7 +69,7 @@ export default {
 	},
 
 	processingResponse: function(responseObj, data) {
-		// console.log(responseObj);
+		console.log(responseObj);
 		if (responseObj.ok) {
 			data.resolve(responseObj, data.toResolve);
 		} else {

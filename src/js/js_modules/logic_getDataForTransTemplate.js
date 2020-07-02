@@ -1,3 +1,5 @@
+"use strict";
+
 export default function(input) {
 	const keyTranslatorOfDetails = {
 		"beneficiaryName": "Beneficiary name",

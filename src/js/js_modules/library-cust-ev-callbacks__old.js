@@ -1,3 +1,5 @@
+"use strict";
+
 // this = customEvents
 export default {
 	'tab-is-clicked': function (ev) {

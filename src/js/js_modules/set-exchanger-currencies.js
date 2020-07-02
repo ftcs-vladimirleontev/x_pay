@@ -1,3 +1,5 @@
+"use strict";
+
 import createSelect from './logic_createSelect.js';
 
 export default function(data, customEvents) {

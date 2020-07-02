@@ -1,3 +1,5 @@
+"use strict";
+
 // import impStateLib from './library-state.js';
 // import impStateLocalLib from './library-state-local.js';
 import stateLib from './library-state.js';

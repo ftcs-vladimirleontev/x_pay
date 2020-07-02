@@ -1,3 +1,5 @@
+"use strict";
+
 import requests from './library-requests.js';
 import state from './library-state.js';
 import local from './library-state-local.js';

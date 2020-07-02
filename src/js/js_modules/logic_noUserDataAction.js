@@ -1,4 +1,7 @@
+"use strict";
+
 import modal from './logic_modal.js';
+
 export default function(type) {
 	const changeModal = modal.bind(this);
 	let text;
@@ -12,6 +15,10 @@ export default function(type) {
 			break;
 		case 'confirm':
 			text = 'Sorry, but we can\'t confirm the transaction at this time. Try this again later';
+			break;
+		case 'verification':
+			text = 	'Sorry, but the link is not correct.' + 
+							' Try going to the main page and re-sending the verification email from the login window.';
 			break;
 	}
 	if (type == 'confirm') {

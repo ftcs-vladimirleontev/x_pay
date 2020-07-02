@@ -1,3 +1,5 @@
+"use strict";
+
 export default function (callback, interval, inputData) {
 	const REPEAT = callback;
 	let timeStep =  interval;

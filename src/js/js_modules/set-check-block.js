@@ -1,3 +1,5 @@
+"use strict";
+
 import requests from './library-requests.js';
 // import modal from './logic_modal.js';
 import setTransactions from './logic_setTransactions.js';

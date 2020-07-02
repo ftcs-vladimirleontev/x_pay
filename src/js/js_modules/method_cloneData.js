@@ -1,3 +1,5 @@
+"use strict";
+
 function cloneData(input) {
 	let type = whatIsIt(input);
 	return (type == 'not_object') ? input : 

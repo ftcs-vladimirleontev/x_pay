@@ -1,3 +1,5 @@
+"use strict";
+
 import stateLib from './library-state.js';
 import stateLocalLib from './library-state-local.js';
 import stateGlobalLib from './library-state-global.js';
@@ -16,7 +18,7 @@ export default function(responseObj, data) {
 	// console.log(responseObj);
 	// console.log(data);
 
-	if (responseObj.status == 200) {
+	if (!responseObj.body.hasOwnProperty('errors')) {
 		if (data.type == 'account') {setTransactionSynch();}
 		setTemplate('transaction-item', getDataForTransTempl(responseObj.body), 'transactions');
 		setShowButtonListeners('.transaction__show-details-button', 'active');

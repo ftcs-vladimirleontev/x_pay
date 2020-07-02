@@ -1,3 +1,5 @@
+"use strict";
+
 /* libraries for state */
 import stateLib from './library-state.js';
 import stateLocalLib from './library-state-local.js';

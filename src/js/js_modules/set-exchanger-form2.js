@@ -1,3 +1,5 @@
+"use strict";
+
 import stateLib from './library-state.js';
 import stateDBLib from './library-state-db.js';
 
@@ -14,34 +16,23 @@ export default function() {
 		]),
 	};
 
-	this.mail_si.addEventListener('change', ev => {
-		changeValueInState(ev);
-	});
-	this.wallet_si.addEventListener('change', ev => {
-		changeValueInState(ev);
-	});
+	const allInputs = [
+		this.mail_si, this.wallet_si, this.benifN_si, this.bankN_si, this.swift_si, this.iban_si, 
+		this.mail_bi, this.phone_bi, this.benifC_bi, this.bankN_bi, this.bankC_bi, 
+	];
+
+	for (let i = 0; i < allInputs.length; i++) {
+		allInputs[i].addEventListener('change', ev => {
+			changeValueInState(ev);
+		});
+	}
+
 	this.wallet_si.addEventListener('keydown', ev => {
 		if (ev.key && ev.key.match(/[A-Za-z0-9]/) === null) {
 			ev.preventDefault();
 		};
 	});
-	this.benifN_si.addEventListener('change', ev => {
-		changeValueInState(ev);
-	});
-	this.bankN_si.addEventListener('change', ev => {
-		changeValueInState(ev);
-	});
-	this.swift_si.addEventListener('change', ev => {
-		changeValueInState(ev);
-	});
-	this.iban_si.addEventListener('change', ev => {
-		changeValueInState(ev);
-	});
 
-
-	this.mail_bi.addEventListener('change', ev => {
-		changeValueInState(ev);
-	});
 	this.phone_bi.addEventListener('keydown', ev => {
 		if (
 			!KEYS.numbers.has(ev.key) && 
@@ -65,18 +56,6 @@ export default function() {
 				return;
 			}
 		}
-	});
-	this.phone_bi.addEventListener('change', ev => {
-		changeValueInState(ev);
-	});
-	this.benifC_bi.addEventListener('change', ev => {
-		changeValueInState(ev);
-	});
-	this.bankN_bi.addEventListener('change', ev => {
-		changeValueInState(ev);
-	});
-	this.bankC_bi.addEventListener('change', ev => {
-		changeValueInState(ev);
 	});
 
 	this.accept_si.addEventListener('change',  ev => {

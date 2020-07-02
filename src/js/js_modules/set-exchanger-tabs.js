@@ -1,3 +1,5 @@
+"use strict";
+
 export default function(customEvents) {
 	const TABS = this.tabs;
 	for (let i = 0; i < TABS.length; i++) {

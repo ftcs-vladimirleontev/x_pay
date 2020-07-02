@@ -1,3 +1,5 @@
+"use strict";
+
 /* libraries for state */
 import stateLib from './library-state.js';
 import stateLocalLib from './library-state-local.js';
@@ -5,6 +7,7 @@ import stateGlobalLib from './library-state-global.js';
 /* library for events */
 import callback from './library-cust-ev-callbacks.js';
 /* methods */
+import modal from './logic_modal.js';
 import initPage from './logic_initPage.js';
 import setCurrencies from './set-exchanger-currencies.js';
 import setCountryLists from './set-exchanger-country-lists.js';
@@ -17,28 +20,29 @@ import setSlide from './logic_setSlide.js';
 
 
 
-export default function (values, TARGETS, customEvents, changeModal, VERSION) {
-	// const changeModal = modal.bind(TARGETS);
+export default function (values, customEvents, VERSION) {
+	const changeModal = modal.bind(this);
+
 	let dataForCurrencies = values[0];
 	let dataForCountries = values[1];
 
 	/* set currencies */
-	setCurrencies.call(TARGETS, dataForCurrencies, customEvents);
+	setCurrencies.call(this, dataForCurrencies, customEvents);
 
 	/* set country lists */
-	setCountryLists.call(TARGETS, dataForCountries);
+	setCountryLists.call(this, dataForCountries);
 
 	/* set element listeners */
 	/* tabs */
-	setExTabs.call(TARGETS, customEvents);
+	setExTabs.call(this, customEvents);
 	/* dropdowns */
-	setExDrops.call(TARGETS, customEvents);
+	setExDrops.call(this, customEvents);
 	/* quantity inputs */
-	setExQInp.call(TARGETS, customEvents);
+	setExQInp.call(this, customEvents);
 	/* form2 */
-	setExForm2.call(TARGETS);
+	setExForm2.call(this);
 	/* exchanger buttons */
-	setExButtons.call(TARGETS, customEvents);
+	setExButtons.call(this, customEvents);
 
 	/* set listeners for custom events */
 	for (const name of customEvents.events) {
@@ -48,7 +52,7 @@ export default function (values, TARGETS, customEvents, changeModal, VERSION) {
 	}
 
 	/* init page */
-	initPage.call(TARGETS, customEvents);
+	initPage.call(this, customEvents);
 
 	/* set synchronization with the global state */
 	window.addEventListener('blur', ev => {
@@ -59,12 +63,12 @@ export default function (values, TARGETS, customEvents, changeModal, VERSION) {
 	window.addEventListener('focus', ev => {
 		stateLib.synchLocal.call(stateLib, stateGlobalLib, stateLocalLib);
 		setTimeout(() => {
-			initPage.call(TARGETS, customEvents);
+			initPage.call(this, customEvents);
 		}, 100);
 	});
 
 
-	// setSlide(3, TARGETS);
+	// setSlide(3, this);
 	/* open page */
 	changeModal(false);
 }

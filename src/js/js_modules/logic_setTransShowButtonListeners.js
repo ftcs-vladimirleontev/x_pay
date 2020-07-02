@@ -1,3 +1,5 @@
+"use strict";
+
 export default function(targetsClass, activationClass) {
 	let showButtons = document.querySelectorAll(targetsClass);
 	if (showButtons) {

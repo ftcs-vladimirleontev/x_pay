@@ -396,7 +396,7 @@ export default {
 				let dataToCallback = {
 					resolve: ifResponseOk.bind(ev.detail.targets), 
 					reject: processingServerErrors.bind(ev.detail.targets),
-					toResolve: {type: 'exchanger',},
+					toResolve: {type: 'exchanger', cryptoValue},
 					toReject: {type: 'exchanger',},
 				};
 				requests.processingFetch(request, requests.processingResponse, dataToCallback);
@@ -480,7 +480,7 @@ export default {
 
 		function ifResponseOk(responseObj, data) {
 			if (requests.bodyIsOK(responseObj)) {
-				let toState = (cryptoValue == '3') ? getETHResponseBody(responseObj) : getResponseBody(responseObj);
+				let toState = (data.cryptoValue == '3') ? getETHResponseBody(responseObj) : getResponseBody(responseObj);
 				processingOK(toState);
 				closureThis.startEvent.call(closureThis, 'transaction-is-started', dataForEv);
 			} else {
@@ -662,3 +662,11 @@ export default {
 		}
 	},
 }
+
+// var details = [
+// 	{"id": 1, "data": "asdfdf"},
+// 	{"id": 2, "data": "asdfdf"},
+// 	{"id": 3, "data": "asdfdf"},
+// 	{"id": 4, "data": "asdfdf"}
+
+// ]

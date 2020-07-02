@@ -1,3 +1,5 @@
+"use strict";
+
 const getCommonObj = function () {
 	let commonObj = {};
 	

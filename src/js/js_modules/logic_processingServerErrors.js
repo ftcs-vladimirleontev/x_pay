@@ -1,3 +1,5 @@
+"use strict";
+
 import modal from './logic_modal.js';
 
 // this = TARGETS
@@ -18,7 +20,7 @@ export default function(responseObj, data) {
 	// console.log(text);
 	// console.log(data.type);
 	if (data.type) {
-		if (data.type == 'login' || data.type == 'create') {
+		if (data.type == 'login' || data.type == 'create' || data.type == 'exchanger' || data.type == 'account') {
 			changeModal(true,'custom-message', text);
 		} else {
 			changeModal(true, 'deferred-redirect-to-home', {text: text, timer: 15});

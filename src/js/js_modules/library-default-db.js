@@ -1,3 +1,5 @@
+"use strict";
+
 export default [
 	{key: 'xpay_sell_mail', value: null}, 
 	{key: 'xpay_sell_walet', value: 1}, 

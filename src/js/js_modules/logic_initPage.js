@@ -1,3 +1,5 @@
+"use strict";
+
 import stateLib from './library-state.js';
 import stateLocalLib from './library-state-local.js';
 import setData from './library-set-data.js';

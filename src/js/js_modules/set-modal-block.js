@@ -1,3 +1,5 @@
+"use strict";
+
 import modal from './logic_modal.js';
 
 // this = TARGETS

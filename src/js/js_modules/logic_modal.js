@@ -1,3 +1,5 @@
+"use strict";
+
 import text from '../source/modal.json';
 // import reloadPage from './logic_reloadPage.js';
 import logic_setTemplate from './logic_setTemplate';

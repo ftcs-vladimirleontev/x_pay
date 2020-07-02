@@ -1,3 +1,5 @@
+"use strict";
+
 function validateIBAN(iban) {
 	let newIban = iban.toUpperCase(),
 			modulo = function (divident, divisor) {

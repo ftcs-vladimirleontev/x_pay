@@ -1,3 +1,4 @@
+"use strict";
 import setVersion from './js_modules/set-version.js';
 setVersion();
 /* #################### GLOBALLY LIBRARIES #################### */
@@ -19,6 +20,7 @@ import setAuthenticationBlock from './js_modules/set-authentication-block.js';
 import setAccountBlock from './js_modules/set-account-block.js';
 import setCheckBlock from './js_modules/set-check-block.js';
 import setVerificationBlock from './js_modules/set-verivication-block.js';
+import getPageName from './js_modules/method_getPageName.js';
 // import setSlide from './js_modules/logic_setSlide.js';
 
 /* #################### CONSTANTS AND VARIABLES #################### */
@@ -39,6 +41,7 @@ window.onload = function() {
 		login_conf_pass_cre: document.getElementById('confirm-pass-create'),
 		login_do_button: document.getElementById('authentication-start-button'),
 		login_close_button: document.getElementById('authentication-close-button'),
+		account_acName: document.getElementById('account-name'),
 		exchanger: document.querySelector('.exchanger'),
 		tabs: document.querySelectorAll('.exchanger__tab'),
 		crypto: document.getElementById('crypto'),
@@ -123,11 +126,8 @@ window.onload = function() {
 		setVerificationBlock.call(TARGETS);
 	}
 
-
 	let pagesWithoutLogic = new Set(['faq.html', 'legal.html']);
-	let urlComponents = location.href.split('/');
-	let page = urlComponents[urlComponents.length - 1].split('?')[0];
-	if (pagesWithoutLogic.has(page)) {
+	if (pagesWithoutLogic.has(getPageName())) {
 		changeModal(false);
 	}
 };
@@ -145,7 +145,7 @@ function processingResponses(values) {
 	if (!error) {
 		if ((values[0] && values[1]) && (typeof values[0] == 'object' && typeof values[1] == 'object'))
 		{
-			setExchangerBlock(values, TARGETS, customEvents, changeModal, window.xpayVer());
+			setExchangerBlock.call(TARGETS, values, customEvents, window.xpayVer());
 		} else {
 			let text = 'Sorry, but it is not possible to get correct data ' 
 				+ 'from the server for the web page to work. Try loading the page later';

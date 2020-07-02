@@ -1,3 +1,5 @@
+"use strict";
+
 // this = TARGETS
 export default function(type, data) {
 	switch(type) {

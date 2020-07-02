@@ -1,3 +1,5 @@
+"use strict";
+
 export default [
 	'xpay_user', 'xpay_transaction_completed', 
 	'xpay_tab', 'xpay_slide', 'xpay_last_change', 'xpay_conting_type', 'xpay_conting_rate', 

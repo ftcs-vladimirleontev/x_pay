@@ -103,7 +103,7 @@
 	flex-wrap: nowrap;
 	justify-content: flex-start;
 	align-items: flex-start;
-	border-bottom: double 3px #000;
+	border-bottom: dashed 1px #000;
 }
 .transaction__details-block{
 	overflow: hidden;

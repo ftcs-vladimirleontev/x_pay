@@ -1,3 +1,5 @@
+"use strict";
+
 export default function() {
 	return {
 		ok: true,

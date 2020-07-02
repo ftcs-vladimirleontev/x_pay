@@ -1,3 +1,5 @@
+"use strict";
+
 import requests from './library-requests.js';
 import stateLib from './library-state.js';
 import stateLocalLib from './library-state-local.js';
@@ -11,17 +13,19 @@ import testTransactions from './test_getTransactions.js';
 
 // this = TARGETS
 export default function() {
-
 	// const changeModal = modal.bind(this);
-	let user = stateLib.getStateValue.call(stateLocalLib, 'user');
+	let user = stateLib.getStateValue.call(stateLocalLib, 'xpay_user');
+	this.account_acName.innerHTML = (user) ? JSON.parse(window.atob(user.split('.')[1])).username : '';
+	// console.log(user);
 	if (user) {
+		// console.log('Вошел');
 		let dataToCallback = {
 			resolve: setTransactions.bind(this), 
 			reject: processingServerErrors.bind(this), 
 			toResolve: {type: 'account'},
 			toReject: {type: 'account'},
 		};
-		let request = requests.sendPOSTRequest(requests.server, '/user/transactions', {}, user);
+		let request = requests.sendGETRequest(requests.server, '/user/transactions', user);
 		requests.processingFetch(request, requests.processingResponse, dataToCallback);
 	} else {
 		noUserDataAction.call(this, 'account');
@@ -29,7 +33,5 @@ export default function() {
 		// 	{status: 200, body: {status: 401, errors: {userData: ['No user data']}}}, {type: 'account'}
 		// );
 	}
-
-
 	// setTransactions.call(this, testTransactions(), {type: 'account'});
 }

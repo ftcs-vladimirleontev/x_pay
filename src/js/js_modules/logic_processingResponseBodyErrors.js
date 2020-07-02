@@ -1,3 +1,5 @@
+"use strict";
+
 import modal from './logic_modal.js';
 
 // this = TARGETS
@@ -5,8 +7,8 @@ export default function(responseObj, data) {
 	const changeModal = modal.bind(this);
 
 	if 	(
-				data.type == 'login' || data.type == 'create' || data.type == 'confirm' || 
-				data.type == 'verification' || data.type == 'exchanger'
+				data.type == 'login' || data.type == 'create' || data.type == 'confirm' || data.type == 'exchanger' ||
+				data.type == 'account'
 			) 
 	{
 		changeModal(true,'custom-message', getErrorText(responseObj));

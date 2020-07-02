@@ -1,3 +1,5 @@
+"use strict";
+
 export default [
 	{key: 'xpay_user', value: null},
 	{key: 'xpay_tab', value: 'sell'}, 

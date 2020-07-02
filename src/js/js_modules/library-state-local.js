@@ -1,3 +1,5 @@
+"use strict";
+
 import state_keys from './library-keys-state.js';
 import defaultValuesArray from './library-default-state.js';
 

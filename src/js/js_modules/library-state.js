@@ -1,3 +1,5 @@
+"use strict";
+
 // this = stateLocalLib or stateGlobalLib or this library
 export default {
 	itsHere: function() {

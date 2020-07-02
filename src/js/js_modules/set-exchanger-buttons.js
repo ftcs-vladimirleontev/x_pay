@@ -1,3 +1,5 @@
+"use strict";
+
 // this = TARGETS
 import stateLib from './library-state.js';
 import stateLocalLib from './library-state-local.js';

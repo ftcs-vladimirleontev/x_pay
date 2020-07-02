@@ -1,3 +1,5 @@
+"use strict";
+
 function createSelect(type, target, data, defaultValue) {
 	let flag = true;
 	let output = '';
