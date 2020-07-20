@@ -38,7 +38,7 @@
     "gulp-remember": "^1.0.1",
     "gulp-rename": "^2.0.0",
     "gulp-sourcemaps": "^2.6.5",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "path": "^0.12.7",
     "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
